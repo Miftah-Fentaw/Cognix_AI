@@ -31,7 +31,7 @@ class _InputBarState extends State<InputBar> {
               child: TextField(
                   controller: controller,
                   minLines: 1,
-                  maxLines: 5,
+                  maxLines: 20,
                   maxLength: 5000,
                   textCapitalization: TextCapitalization.sentences,
                   style: TextStyle(
