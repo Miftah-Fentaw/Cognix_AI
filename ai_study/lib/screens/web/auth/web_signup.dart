@@ -34,26 +34,6 @@ class _SignUpWebState extends State<SignUpWeb> {
     return Scaffold(
       body: Row(children: [
         Expanded(
-          flex: 5,
-          child: Container(
-            padding: const EdgeInsets.all(48),
-            color: Theme.of(context).colorScheme.primaryContainer,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(children: [
-                  Icon(Icons.auto_stories_rounded, size: 64, color: Theme.of(context).colorScheme.primary),
-                  const SizedBox(width: 16),
-                  Text('Cognix', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onPrimaryContainer)),
-                ]),
-                const SizedBox(height: 24),
-                Text('Create your account', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer)),
-              ],
-            ),
-          ),
-        ),
-        Expanded(
           flex: 4,
           child: Center(
             child: ConstrainedBox(
@@ -81,11 +61,20 @@ class _SignUpWebState extends State<SignUpWeb> {
                         validator: (v) => (v == null || v.length < 6) ? 'Min 6 chars' : null,
                       ),
                       const SizedBox(height: 20),
-                      FilledButton.icon(
+                      DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        gradient: LinearGradient(colors: [
+                           Color.fromARGB(255, 9, 62, 83),
+                           Color.fromARGB(255, 5, 142, 255),
+                        ],
+                      ),
+                      ),
+                      child: FilledButton.icon(
                         onPressed: isLoading ? null : _submit,
-                        icon: const Icon(Icons.check_circle, color: Colors.white),
-                        label: Text(isLoading ? 'Creating...' : 'Create Account'),
-                        style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                        label: Text(isLoading ? 'Creating...' : 'Create Account',style: TextStyle(color: Colors.white),),
+                        style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16),foregroundColor: Colors.transparent,backgroundColor: Colors.transparent),
+                      ),
                       ),
                       const SizedBox(height: 8),
                       TextButton(
@@ -96,6 +85,25 @@ class _SignUpWebState extends State<SignUpWeb> {
                   ),
                 ),
               ),
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 5,
+          child: Container(
+            padding: const EdgeInsets.all(48),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(children: [
+                  Image.asset("assets/cognix.png",height: 50,),
+                  const SizedBox(width: 16),
+                  Text('Cognix', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onPrimaryContainer)),
+                ]),
+                const SizedBox(height: 24),
+                Text('Create your account', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer)),
+              ],
             ),
           ),
         ),

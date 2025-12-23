@@ -34,26 +34,6 @@ class _SignInWebState extends State<SignInWeb> {
     return Scaffold(
       body: Row(children: [
         Expanded(
-          flex: 5,
-          child: Container(
-            padding: const EdgeInsets.all(48),
-            color: Theme.of(context).colorScheme.primaryContainer,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(children: [
-                  Icon(Icons.auto_stories_rounded, size: 64, color: Theme.of(context).colorScheme.primary),
-                  const SizedBox(width: 16),
-                  Text('Cognix', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onPrimaryContainer)),
-                ]),
-                const SizedBox(height: 24),
-                Text('Welcome back', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer)),
-              ],
-            ),
-          ),
-        ),
-        Expanded(
           flex: 4,
           child: Center(
             child: ConstrainedBox(
@@ -81,11 +61,21 @@ class _SignInWebState extends State<SignInWeb> {
                         validator: (v) => (v == null || v.length < 6) ? 'Min 6 chars' : null,
                       ),
                       const SizedBox(height: 20),
-                      FilledButton.icon(
+                      DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        gradient: LinearGradient(colors: [
+                           Color.fromARGB(255, 9, 62, 83),
+                           Color.fromARGB(255, 5, 142, 255),
+                        ],
+                      ),
+                      ),
+                      child: FilledButton.icon(
                         onPressed: isLoading ? null : _submit,
                         icon: const Icon(Icons.login, color: Colors.white),
                         label: Text(isLoading ? 'Signing In...' : 'Sign In'),
-                        style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                        style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16),foregroundColor: Colors.transparent,backgroundColor: Colors.transparent),
+                      ),
                       ),
                       const SizedBox(height: 8),
                       TextButton(
@@ -96,6 +86,25 @@ class _SignInWebState extends State<SignInWeb> {
                   ),
                 ),
               ),
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 5,
+          child: Container(
+            padding: const EdgeInsets.all(48),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(children: [
+                  Image.asset("assets/cognix.png",height: 50,),
+                  const SizedBox(width: 16),
+                  Text('Cognix', style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onPrimaryContainer)),
+                ]),
+                const SizedBox(height: 24),
+                Text('Welcome back', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer)),
+              ],
             ),
           ),
         ),
