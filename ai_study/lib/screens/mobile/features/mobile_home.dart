@@ -1,4 +1,6 @@
 import 'package:cognix/controler/chat_controller.dart';
+import 'package:cognix/screens/mobile/features/chat_history_screen.dart';
+import 'package:cognix/screens/mobile/features/settings_screen.dart';
 import 'package:cognix/widgets/chat_drawer.dart';
 import 'package:cognix/widgets/chat_list.dart';
 import 'package:cognix/widgets/input_bar.dart';
@@ -21,8 +23,28 @@ class _MobileHomeState extends State<MobileHome> {
       extendBodyBehindAppBar: true, // ← makes background visible behind appbar
       drawer: ChatDrawer(
         onNewChat: () {
+          // Navigator.pop(context) is already called in the drawer
           controller.clearChat(setState);
-          Navigator.pop(context);
+        },
+        onShowHistory: () {
+          // Navigator.pop(context) is already called in the drawer
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ChatHistoryScreen(
+                onChatSelected: (session) async {
+                  await controller.loadChat(session);
+                  setState(() {}); // Refresh UI with loaded messages
+                },
+              ),
+            ),
+          );
+        },
+        onShowSettings: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SettingsScreen()),
+          );
         },
       ),
       appBar: AppBar(
@@ -68,6 +90,7 @@ class _MobileHomeState extends State<MobileHome> {
                 ),
                 InputBar(
                   onSend: (text) => controller.sendMessage(text, setState),
+                  onAttachment: () => controller.pickAndUploadFile(setState),
                 ),
               ],
             ),

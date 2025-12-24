@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 
 class ChatDrawer extends StatelessWidget {
   final VoidCallback onNewChat;
+  final VoidCallback onShowHistory;
+  final VoidCallback onShowSettings;
 
-  const ChatDrawer({super.key, required this.onNewChat});
+  const ChatDrawer({
+    super.key,
+    required this.onNewChat,
+    required this.onShowHistory,
+    required this.onShowSettings,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +39,47 @@ class ChatDrawer extends StatelessWidget {
         ),
         child: Column(
           children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                border: Border(
+                    bottom: BorderSide(color: Colors.white.withOpacity(0.1))),
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                            color: Colors.white.withOpacity(0.3), width: 2),
+                      ),
+                      child: CircleAvatar(
+                        radius: 32,
+                        backgroundColor: Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Image.asset("assets/cognix.png"),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Cognix',
+                      style: TextStyle(
+                        fontFamily: 'ADLaMDisplay', // Using the custom font
+                        fontSize: 24,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
             // Your original content (unchanged)
             _DrawerItem(
               icon: Icons.chat_bubble_outline,
@@ -44,22 +92,18 @@ class ChatDrawer extends StatelessWidget {
             _DrawerItem(
               icon: Icons.history,
               label: 'Chat History',
-              onTap: () {},
-            ),
-            _DrawerItem(
-              icon: Icons.bookmark_outline,
-              label: 'Saved Notes',
-              onTap: () {},
+              onTap: () {
+                Navigator.pop(context); // Close drawer
+                onShowHistory(); // Trigger show history callback
+              },
             ),
             _DrawerItem(
               icon: Icons.settings,
               label: 'Settings',
-              onTap: () {},
-            ),
-            _DrawerItem(
-              icon: Icons.help_outline,
-              label: 'Help & Support',
-              onTap: () {},
+              onTap: () {
+                Navigator.pop(context);
+                onShowSettings();
+              },
             ),
 
             const Spacer(),
@@ -72,7 +116,8 @@ class ChatDrawer extends StatelessWidget {
                     '© 2025 Cognix',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.white.withOpacity(0.7), // better visibility on gradient
+                      color: Colors.white
+                          .withOpacity(0.7), // better visibility on gradient
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -116,7 +161,8 @@ class _DrawerItem extends StatelessWidget {
           color: Colors.white.withOpacity(0.15), // subtle contrast on gradient
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(icon, color: Colors.white, size: 22), // white for visibility
+        child:
+            Icon(icon, color: Colors.white, size: 22), // white for visibility
       ),
       title: Text(
         label,

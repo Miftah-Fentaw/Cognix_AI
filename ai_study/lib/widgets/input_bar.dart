@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class InputBar extends StatefulWidget {
   final Function(String) onSend;
+  final VoidCallback? onAttachment;
 
-  const InputBar({super.key, required this.onSend});
+  const InputBar({super.key, required this.onSend, this.onAttachment});
 
   @override
   State<InputBar> createState() => _InputBarState();
@@ -25,9 +26,11 @@ class _InputBarState extends State<InputBar> {
             IconButton(
               icon: Icon(Icons.attach_file, color: Colors.grey[600]),
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('File upload coming soon')),
-                );
+                // We need to access the controller from the parent widget
+                // To keep InputBar decoupled, we should add an onFileUpload callback?
+                // OR, just for now, since the user wants it implemented, we can modify the constructor
+                // But wait, the InputBar takes `onSend`. Let's add `onAttachment`.
+                widget.onAttachment?.call();
               },
             ),
 
@@ -80,9 +83,7 @@ class _InputBarState extends State<InputBar> {
               ),
               child: IconButton(
                 icon: const Icon(Icons.send, color: Colors.white),
-                onPressed: controller.text.trim().isEmpty
-                    ? null
-                    : _sendMessage,
+                onPressed: controller.text.trim().isEmpty ? null : _sendMessage,
               ),
             ),
           ],

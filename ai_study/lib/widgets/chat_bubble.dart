@@ -171,8 +171,7 @@ class ChatBubble extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (_) => QAScreen(
-                          questions: aiResponse.questions,
-                          answers: aiResponse.answers,
+                          quiz: aiResponse.quiz,
                         ),
                       ),
                     );

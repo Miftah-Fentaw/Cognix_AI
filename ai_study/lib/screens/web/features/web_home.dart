@@ -60,6 +60,20 @@ class _WebHomeState extends State<WebHome> {
           setState(() => _messages.clear());
           Navigator.pop(context);
         },
+        onShowHistory: () {
+          // Web history not implemented yet
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('History not available on web yet')),
+          );
+        },
+        onShowSettings: () {
+          // Web settings not implemented yet
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Settings not available on web yet')),
+          );
+        },
       ),
       body: Stack(
         children: [
@@ -99,7 +113,8 @@ class _WebHomeState extends State<WebHome> {
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 1000),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 16),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(24),
                         child: BackdropFilter(
@@ -129,19 +144,19 @@ class _WebHomeState extends State<WebHome> {
                                           padding: const EdgeInsets.all(24),
                                           itemCount: _messages.length,
                                           itemBuilder: (context, index) {
-                                            return ChatBubble(message: _messages[index]);
+                                            return ChatBubble(
+                                                message: _messages[index]);
                                           },
                                         ),
                                 ),
-
                                 if (_isLoading)
                                   const Padding(
                                     padding: EdgeInsets.all(16),
                                     child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white70),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white70),
                                     ),
                                   ),
-
                                 _buildInputBar(),
                               ],
                             ),
@@ -203,7 +218,6 @@ class _WebHomeState extends State<WebHome> {
               );
             },
           ),
-
           Expanded(
             child: TextField(
               controller: _controller,
@@ -228,9 +242,7 @@ class _WebHomeState extends State<WebHome> {
               onSubmitted: (_) => _sendMessage(),
             ),
           ),
-
           const SizedBox(width: 16),
-
           IconButton(
             icon: const Icon(Icons.send, color: Colors.white),
             onPressed: _isLoading ? null : _sendMessage,
