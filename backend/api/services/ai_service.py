@@ -1,158 +1,177 @@
+"""AI service helpers.
+
+This module calls the external Groq API to analyze text and returns a dict
+matching the schema:
+
+{
+  "summary": "string",
+  "short_notes": ["string", "..."],
+  "questions": ["string", "..."],
+  "answers": ["string", "..."]
+}
+
+Configure via environment variables:
+- GROQ_API_KEY: required
+- GROQ_API_URL: optional; defaults to https://api.groq.com/openai/v1/chat/completions
+
+The module exposes:
+- analyze_text_with_grok(text: str) -> dict
+- analyze_text(text: str) -> dict  (alias, used by file processing)
+"""
+
 import json
 import logging
-import re
+import os
 from typing import Dict
 
 import requests
-
-OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
-MODEL_NAME = "mistral"
+# Try to load .env if python-dotenv is available, but don't crash if not
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 logger = logging.getLogger(__name__)
 
 
-def analyze_text(text: str) -> Dict:
-    """Send extracted text to Ollama Mistral and return a dict matching the
-    exact schema:
-
-    {
-      "summary": "string",
-      "short_notes": ["string", "..."],
-      "questions": ["string", "..."],
-      "answers": ["string", "..."]
-    }
-
-    This function forces the model to return ONLY valid JSON, logs the raw
-    response for debugging, and raises a visible error if parsing fails.
-    """
-    if not text or not text.strip():
-        raise ValueError("No text to analyze. Ensure extracted text is provided.")
-
-    # Strong prompt that forces JSON-only output with exact schema, no markdown
-    # or extra text. Use deterministic sampling.
-    prompt = (
+def _build_prompt(text: str) -> str:
+    return (
         "You are an academic assistant.\n"
         "Analyze the following text and respond ONLY with valid JSON that exactly "
         "matches this schema (no markdown, no explanation, no extra text):\n\n"
         "{\n"
-        "  \"summary\": \"string\",\n"
-        "  \"short_notes\": [\"string\", \"...\"],\n"
-        "  \"questions\": [\"string\", \"...\"],\n"
-        "  \"answers\": [\"string\", \"...\"]\n"
+        "  \"summary\": \"3-5 detailed paragraphs covering all key concepts\",\n"
+        "  \"short_notes\": [\"note 1\", \"note 2\", ... \"note 10-15\"],\n"
+        "  \"quiz\": [\n"
+        "    {\n"
+        "      \"question\": \"The question text?\",\n"
+        "      \"options\": [\"Option A\", \"Option B\", \"Option C\", \"Option D\"],\n"
+        "      \"answer\": \"The correct option text\"\n"
+        "    },\n"
+        "    ... (20 questions)\n"
+        "  ]\n"
         "}\n\n"
+        "Requirements:\n"
+        "- Summary: 3-5 comprehensive paragraphs\n"
+        "- Short Notes: 10-15 detailed, informative bullet points\n"
+        "- Quiz: Exactly 20 detailed multiple-choice questions. \n"
+        "  - 'options' MUST contain 4 distinct choices (1 correct, 3 distractors).\n"
+        "  - 'answer' MUST be one of the strings from 'options'.\n\n"
         "If you cannot produce content, return empty string/arrays for the fields.\n\n"
         "TEXT:\n"
         f"{text}\n"
     )
 
+
+def analyze_text_with_grok(text: str) -> dict:
+    if not text or not text.strip():
+        raise ValueError("No text to analyze. Ensure extracted text is provided.")
+
+    api_key = os.getenv("GROQ_API_KEY")
+    # For Groq, the endpoint usually ends in /chat/completions
+    api_url = os.getenv("GROQ_API_URL", "https://api.groq.com/openai/v1/chat/completions")
+    model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+
+    if not api_key:
+        raise EnvironmentError("GROQ_API_KEY not set in environment")
+
+    prompt = _build_prompt(text)
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+
+    # API Payload for Chat Completions
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": "You are a helpful JSON-only API assistant."},
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.3,
+        "max_tokens": 8000,
+        "response_format": {"type": "json_object"}
+    }
+
     try:
-        response = requests.post(
-            OLLAMA_URL,
-            json={
-                "model": MODEL_NAME,
-                "prompt": prompt,
-                "max_tokens": 1024,
-                "temperature": 0.0,
-            },
-            timeout=60,
-        )
-        response.raise_for_status()
-
-        # Prefer to inspect response.json() to see structured fields returned
-        # by Ollama, but always keep the raw text for logging and parsing.
-        raw_response_text = None
-        try:
-            resp_json = response.json()
-            # Ollama may return a list or a dict. Try to extract the completion
-            if isinstance(resp_json, list) and resp_json:
-                # first item may contain 'completion' or 'text'
-                raw_response_text = (
-                    resp_json[0].get("completion")
-                    or resp_json[0].get("text")
-                    or json.dumps(resp_json)
-                )
-            elif isinstance(resp_json, dict):
-                raw_response_text = (
-                    resp_json.get("completion")
-                    or resp_json.get("text")
-                    or resp_json.get("content")
-                    or json.dumps(resp_json)
-                )
-            else:
-                raw_response_text = json.dumps(resp_json)
-        except ValueError:
-            # Not JSON; fall back to plain text
-            raw_response_text = response.text
-
-        logger.debug("Raw Ollama response: %s", raw_response_text)
-
-        # Attempt direct JSON parse
-        try:
-            parsed = json.loads(raw_response_text)
-            return parsed
-        except Exception as e:
-            # Try to extract a JSON substring if the model added stray text
+        resp = requests.post(api_url, json=payload, headers=headers, timeout=120)
+        
+        if resp.status_code != 200:
+             # Try to get error message from body
             try:
-                start = raw_response_text.find("{")
-                end = raw_response_text.rfind("}")
-                if start != -1 and end != -1 and end > start:
-                    candidate = raw_response_text[start : end + 1]
-                    parsed = json.loads(candidate)
-                    logger.warning("Parsed JSON from substring of model output.")
-                    return parsed
-            except Exception:
-                # Fallthrough to logging the original error
-                pass
+                err_body = resp.json()
+                error_msg = err_body.get('error', {}).get('message', resp.text)
+            except:
+                error_msg = resp.text
+            raise Exception(f"Groq API error {resp.status_code}: {error_msg}")
 
-            # Surface the error clearly instead of silently swallowing it
-            logger.error(
-                "Failed to parse JSON from Ollama response: %s\nRaw response: %s",
-                str(e),
-                raw_response_text,
-            )
-            raise ValueError(
-                "Failed to parse JSON from Ollama response. See logs for raw output."
+        try:
+            resp_json = resp.json()
+        except ValueError:
+            raise ValueError("Groq response not JSON")
+
+        # Extract content from Chat Completion response structure
+        # { "choices": [ { "message": { "content": "..." } } ] }
+        raw_text = ""
+        if isinstance(resp_json, dict) and "choices" in resp_json:
+             choices = resp_json["choices"]
+             if choices and isinstance(choices, list):
+                 message = choices[0].get("message", {})
+                 raw_text = message.get("content", "")
+        
+        # Fallback if standard structure isn't found
+        if not raw_text:
+             # Try direct keys just in case
+             raw_text = (
+                resp_json.get("output")
+                or resp_json.get("text")
+                or resp_json.get("response")
+                or resp_json.get("result")
+                or json.dumps(resp_json)
             )
 
-    except Exception:
-        logger.exception("Error while communicating with Ollama model")
-        # Re-raise so the failure is visible to calling code / API layer
+        logger.debug("Raw Groq response: %s", raw_text)
+
+        # Try direct JSON parse
+        try:
+            parsed = json.loads(raw_text)
+        except Exception:
+            # Try to extract JSON substring
+            start = raw_text.find("{")
+            end = raw_text.rfind("}")
+            if start != -1 and end != -1 and end > start:
+                candidate = raw_text[start : end + 1]
+                parsed = json.loads(candidate)
+            else:
+                raise ValueError("Failed to parse JSON from Groq response")
+
+        # Normalize result to ensure correct types
+        final_result = {
+            "summary": parsed.get("summary", "No summary generated"),
+            "short_notes": parsed.get("short_notes", []),
+            "quiz": parsed.get("quiz", []),
+        }
+
+        # Ensure lists
+        for k in ("short_notes", "quiz"):
+            if not final_result.get(k) or not isinstance(final_result[k], list):
+                final_result[k] = []
+
+        return final_result
+
+    except requests.exceptions.Timeout:
+        raise Exception("Groq API request timed out. Please try again.")
+    except requests.exceptions.RequestException as e:
+        raise Exception(f"Failed to connect to Groq API: {str(e)}")
+    except json.JSONDecodeError as e:
+        raise Exception(f"Failed to parse JSON from Groq response: {str(e)}")
+    except Exception as e:
+        logger.exception("Error processing Groq response: %s", e)
         raise
 
 
-
-def analyze_text_with_ollama(text: str) -> dict:
-    prompt = f"""
-You are an academic assistant.
-
-Analyze the text below and return ONLY valid JSON.
-No markdown. No explanations.
-
-Schema:
-{{
-  "summary": "string",
-  "short_notes": ["string"],
-  "questions": ["string"],
-  "answers": ["string"]
-}}
-
-Text:
-\"\"\"{text}\"\"\"
-"""
-
-    response = requests.post(
-        OLLAMA_URL,
-        json={
-            "model": MODEL_NAME,
-            "prompt": prompt,
-            "stream": False
-        },
-        timeout=120
-    )
-
-    raw_output = response.json().get("response", "").strip()
-
-    # DEBUG (keep during development)
-    print("OLLAMA RAW OUTPUT:\n", raw_output)
-
-    return json.loads(raw_output)
+def analyze_text(text: str) -> Dict:
+    """Compatibility wrapper used by file-processing endpoint; delegates to Grok."""
+    return analyze_text_with_grok(text)
