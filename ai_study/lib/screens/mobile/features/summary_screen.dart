@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class SummaryScreen extends StatelessWidget {
-  final String content;
+  final String summary;
 
-  const SummaryScreen({super.key, required this.content});
+  const SummaryScreen({super.key, required this.summary});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class SummaryScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.copy),
             onPressed: () {
-              Clipboard.setData(ClipboardData(text: content.trim()));
+              Clipboard.setData(ClipboardData(text: summary));
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Summary copied!')),
               );
@@ -25,10 +25,10 @@ class SummaryScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Text(
-          content.trim(),
+          summary,
           style: TextStyle(
             fontSize: 17,
             height: 1.6,

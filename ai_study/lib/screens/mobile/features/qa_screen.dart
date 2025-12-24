@@ -1,96 +1,107 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-class QAScreen extends StatelessWidget {
-  final String content;
+class QAScreen extends StatefulWidget {
+  final List<String> questions;
+  final List<String> answers;
 
-  const QAScreen({super.key, required this.content});
+  const QAScreen({super.key, required this.questions, required this.answers});
 
   @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final qaPairs = _parseQaPairs(content);
+  State<QAScreen> createState() => _QAScreenState();
+}
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('❓ Q&A Practice'),
+class _QAScreenState extends State<QAScreen> {
+  int currentIndex = 0;
+  int score = 0;
+  List<int?> selectedChoices = [];
+
+  @override
+  void initState() {
+    super.initState();
+    selectedChoices = List<int?>.filled(widget.questions.length, null);
+  }
+
+  void selectAnswer(int choiceIndex, List<String> choices) {
+    setState(() {
+      selectedChoices[currentIndex] = choiceIndex;
+      if (choices[choiceIndex] == widget.answers[currentIndex]) score++;
+
+      if (currentIndex < widget.questions.length - 1) {
+        currentIndex++;
+      } else {
+        _showResult();
+      }
+    });
+  }
+
+  void _showResult() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Quiz Finished'),
+        content: Text('Your score: $score / ${widget.questions.length}'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.copy),
+          TextButton(
             onPressed: () {
-              Clipboard.setData(ClipboardData(text: content.trim()));
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Full Q&A copied!')),
-              );
+              Navigator.pop(context); // close dialog
+              Navigator.pop(context); // go back
             },
-          ),
+            child: const Text('Close'),
+          )
         ],
-      ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: qaPairs.length,
-        itemBuilder: (context, index) {
-          final pair = qaPairs[index];
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            elevation: 3,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            color: isDark ? Colors.grey.shade800 : Colors.white,
-            child: ExpansionTile(
-              title: Text(
-                pair['question']!,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: isDark ? Colors.white : Colors.black,
-                ),
-              ),
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  child: Text(
-                    pair['answer']!,
-                    style: TextStyle(
-                      fontSize: 15,
-                      height: 1.5,
-                      color: isDark ? Colors.white70 : Colors.grey.shade800,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
       ),
     );
   }
 
-  List<Map<String, String>> _parseQaPairs(String content) {
-    final pairs = <Map<String, String>>[];
-    final lines = content.trim().split('\n');
-
-    String currentQ = '';
-    String currentA = '';
-
-    for (var line in lines) {
-      final trimmed = line.trim();
-      if (trimmed.startsWith('Q:')) {
-        if (currentQ.isNotEmpty) {
-          pairs.add({'question': currentQ, 'answer': currentA.trim()});
-        }
-        currentQ = trimmed.substring(2).trim();
-        currentA = '';
-      } else if (trimmed.startsWith('A:')) {
-        currentA += trimmed.substring(2).trim() + '\n';
-      } else {
-        currentA += trimmed + '\n';
-      }
+  @override
+  Widget build(BuildContext context) {
+    if (widget.questions.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('❓ Q&A')),
+        body: const Center(child: Text('No questions available')),
+      );
     }
 
-    if (currentQ.isNotEmpty) {
-      pairs.add({'question': currentQ, 'answer': currentA.trim()});
+    // Generate choices: answer + dummy options
+    List<String> choices = [widget.answers[currentIndex]];
+    int dummyCount = 3;
+    for (int i = 0; i < dummyCount; i++) {
+      choices.add('Option ${i + 1}');
     }
+    choices.shuffle();
 
-    return pairs;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Question ${currentIndex + 1} / ${widget.questions.length}'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              widget.questions[currentIndex],
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 24),
+            ...List.generate(
+              choices.length,
+              (i) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: selectedChoices[currentIndex] == i
+                        ? Colors.blue
+                        : null,
+                  ),
+                  onPressed: () => selectAnswer(i, choices),
+                  child: Text(choices[i]),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

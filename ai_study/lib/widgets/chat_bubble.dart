@@ -1,10 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:cognix/screens/mobile/features/notes_screen.dart';
 import 'package:cognix/screens/mobile/features/qa_screen.dart';
 import 'package:cognix/screens/mobile/features/summary_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:cognix/model/chat_message.dart';
-
 
 class ChatBubble extends StatelessWidget {
   final ChatMessage message;
@@ -17,13 +15,13 @@ class ChatBubble extends StatelessWidget {
     final isUser = message.isUser;
 
     if (isUser) {
-      return _buildUserBubble(context, isDark);
+      return _buildUserBubble(context);
     }
 
     return _buildAiBubble(context, isDark, message.text);
   }
 
-  Widget _buildUserBubble(BuildContext context, bool isDark) {
+  Widget _buildUserBubble(BuildContext context) {
     return Align(
       alignment: Alignment.centerRight,
       child: Container(
@@ -36,7 +34,7 @@ class ChatBubble extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
             bottomLeft: Radius.circular(20),
@@ -46,39 +44,49 @@ class ChatBubble extends StatelessWidget {
             BoxShadow(
               color: Colors.blue.withOpacity(0.25),
               blurRadius: 10,
-              offset: Offset(0, 3),
+              offset: const Offset(0, 3),
             ),
           ],
         ),
         child: Text(
           message.text,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 15.5,
-            height: 1.4,
-          ),
+          style:
+              const TextStyle(color: Colors.white, fontSize: 15.5, height: 1.4),
         ),
       ),
     );
   }
 
   Widget _buildAiBubble(BuildContext context, bool isDark, String rawText) {
-    final sections = _parseSections(rawText);
+    // Use structured data if available, otherwise show error message
+    final aiResponse = message.aiResponse;
 
-    final summaryContent = sections.firstWhere(
-      (s) => s['title']!.contains('Summary'),
-      orElse: () => {'content': ''},
-    )['content'] ?? '';
-
-    final notesContent = sections.firstWhere(
-      (s) => s['title']!.contains('Notes'),
-      orElse: () => {'content': ''},
-    )['content'] ?? '';
-
-    final qaContent = sections.firstWhere(
-      (s) => s['title']!.contains('Q&A'),
-      orElse: () => {'content': ''},
-    )['content'] ?? '';
+    // If no structured data, just show the text (error message)
+    if (aiResponse == null) {
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+          constraints: const BoxConstraints(maxWidth: 360),
+          decoration: BoxDecoration(
+            color: isDark ? Colors.grey.shade800 : Colors.white,
+            borderRadius: const BorderRadius.all(Radius.circular(20)),
+            border: Border.all(
+              color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+              width: 1,
+            ),
+          ),
+          child: Text(
+            rawText,
+            style: TextStyle(
+              color: isDark ? Colors.white : Colors.black87,
+              fontSize: 15,
+            ),
+          ),
+        ),
+      );
+    }
 
     return Align(
       alignment: Alignment.centerLeft,
@@ -87,19 +95,8 @@ class ChatBubble extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
         constraints: const BoxConstraints(maxWidth: 360),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: isDark
-                ? [Colors.grey.shade800, Colors.grey.shade800]
-                : [Colors.white, Colors.grey.shade50],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-            bottomLeft: Radius.circular(6),
-            bottomRight: Radius.circular(20),
-          ),
+          color: isDark ? Colors.grey.shade800 : Colors.white,
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
           border: Border.all(
             color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
             width: 1,
@@ -108,7 +105,7 @@ class ChatBubble extends StatelessWidget {
             BoxShadow(
               color: Colors.black.withOpacity(0.08),
               blurRadius: 12,
-              offset: Offset(0, 4),
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -120,9 +117,9 @@ class ChatBubble extends StatelessWidget {
                 CircleAvatar(
                   radius: 16,
                   backgroundColor: const Color.fromARGB(255, 2, 38, 68),
-                  child: Image.asset("assets/cognix.png",),
+                  child: Image.asset("assets/cognix.png"),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Text(
                   'Cognix',
                   style: TextStyle(
@@ -133,8 +130,7 @@ class ChatBubble extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 16),
-
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -146,7 +142,8 @@ class ChatBubble extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => SummaryScreen(content: summaryContent),
+                        builder: (_) =>
+                            SummaryScreen(summary: aiResponse.summary),
                       ),
                     );
                   },
@@ -159,7 +156,8 @@ class ChatBubble extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => NotesScreen(content: notesContent),
+                        builder: (_) =>
+                            NotesScreen(notes: aiResponse.shortNotes),
                       ),
                     );
                   },
@@ -172,15 +170,17 @@ class ChatBubble extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => QAScreen(content: qaContent),
+                        builder: (_) => QAScreen(
+                          questions: aiResponse.questions,
+                          answers: aiResponse.answers,
+                        ),
                       ),
                     );
                   },
                 ),
               ],
             ),
-
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
               'Just now',
               style: TextStyle(
@@ -222,7 +222,7 @@ class ChatBubble extends StatelessWidget {
             ),
             child: Icon(icon, color: Colors.white, size: 28),
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           Text(
             label,
             style: TextStyle(
@@ -234,45 +234,5 @@ class ChatBubble extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  List<Map<String, String>> _parseSections(String text) {
-    final sections = <Map<String, String>>[];
-    final lines = text.split('\n');
-    String currentTitle = '';
-    String currentContent = '';
-
-    for (var line in lines) {
-      final trimmed = line.trim();
-      if (trimmed.isEmpty) continue;
-
-      if (trimmed.startsWith('📘') || trimmed.contains('Summary:')) {
-        if (currentTitle.isNotEmpty) {
-          sections.add({'title': currentTitle, 'content': currentContent.trim()});
-        }
-        currentTitle = '📘 Summary';
-        currentContent = '';
-      } else if (trimmed.startsWith('📝') || trimmed.contains('Notes:')) {
-        if (currentTitle.isNotEmpty) {
-          sections.add({'title': currentTitle, 'content': currentContent.trim()});
-        }
-        currentTitle = '📝 Short Notes';
-        currentContent = '';
-      } else if (trimmed.startsWith('❓') || trimmed.contains('Q&A:')) {
-        if (currentTitle.isNotEmpty) {
-          sections.add({'title': currentTitle, 'content': currentContent.trim()});
-        }
-        currentTitle = '❓ Q&A';
-        currentContent = '';
-      } else {
-        currentContent += '$line\n';
-      }
-    }
-
-    if (currentTitle.isNotEmpty) {
-      sections.add({'title': currentTitle, 'content': currentContent.trim()});
-    }
-
-    return sections;
   }
 }

@@ -28,8 +28,9 @@ class _MobileHomeState extends State<MobileHome> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title:  Text('Cognix',
-        style: GoogleFonts.aDLaMDisplay(),
+        title: Text(
+          'Cognix',
+          style: GoogleFonts.aDLaMDisplay(),
         ),
         leading: Builder(
           builder: (context) => IconButton(
