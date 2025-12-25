@@ -3,6 +3,7 @@ import 'package:cognix/screens/mobile/features/notes_screen.dart';
 import 'package:cognix/screens/mobile/features/qa_screen.dart';
 import 'package:cognix/screens/mobile/features/summary_screen.dart';
 import 'package:cognix/model/chat_message.dart';
+import 'package:open_file/open_file.dart';
 
 class ChatBubble extends StatelessWidget {
   final ChatMessage message;
@@ -18,7 +19,92 @@ class ChatBubble extends StatelessWidget {
       return _buildUserBubble(context);
     }
 
+    if (message.filePath != null) {
+      return _buildFileBubble(context, isDark);
+    }
+
     return _buildAiBubble(context, isDark, message.text);
+  }
+
+  Widget _buildFileBubble(BuildContext context, bool isDark) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: const EdgeInsets.all(16),
+        constraints: const BoxConstraints(maxWidth: 300),
+        decoration: BoxDecoration(
+          color: isDark ? Colors.grey.shade800 : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: Colors.amber.withOpacity(0.5),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.amber.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.picture_as_pdf, color: Colors.red),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Study Package",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.white : Colors.black87),
+                      ),
+                      Text(
+                        message.text
+                            .replaceAll("Generated Study Package: ", ""),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: isDark ? Colors.grey : Colors.black54),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () => OpenFile.open(message.filePath),
+                icon: const Icon(Icons.visibility, size: 16),
+                label: const Text("Open PDF"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black87,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildUserBubble(BuildContext context) {

@@ -55,9 +55,9 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
         body: Stack(
           children: [
             // Background
-            Positioned.fill(
-              child: Image.asset('assets/background.png', fit: BoxFit.cover),
-            ),
+            // Positioned.fill(
+            //   child: Image.asset('assets/background.png', fit: BoxFit.cover),
+            // ),
             Positioned.fill(
               child: Container(color: Colors.black.withOpacity(0.6)),
             ),

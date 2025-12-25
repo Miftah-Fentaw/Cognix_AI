@@ -24,7 +24,7 @@ class SummaryScreen extends StatelessWidget {
         slivers: [
           // Modern App Bar with gradient
           SliverAppBar(
-            expandedHeight: 120,
+            expandedHeight: 60,
             floating: false,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
@@ -40,9 +40,7 @@ class SummaryScreen extends StatelessWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: isDark
-                        ? [Colors.blue.shade900, Colors.purple.shade900]
-                        : [Colors.blue.shade400, Colors.purple.shade400],
+                    colors: [Colors.blue.shade400, Colors.white70],
                   ),
                 ),
               ),

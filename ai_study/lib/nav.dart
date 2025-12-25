@@ -3,6 +3,7 @@ import 'package:cognix/screens/mobile/auth/mobile_signin.dart';
 import 'package:cognix/screens/mobile/auth/mobile_signup.dart';
 import 'package:cognix/screens/mobile/auth/mobile_welcome.dart';
 import 'package:cognix/screens/mobile/features/mobile_home.dart';
+import 'package:cognix/screens/mobile/features/premium_feature.dart';
 import 'package:cognix/screens/mobile/onboarding/onboarding_screen.dart';
 import 'package:cognix/screens/web/auth/web_signin.dart';
 import 'package:cognix/screens/web/auth/web_signup.dart';
@@ -10,7 +11,6 @@ import 'package:cognix/screens/web/auth/web_welcome.dart';
 import 'package:cognix/screens/web/features/web_home.dart';
 import 'package:cognix/utils/platform_checker.dart';
 import 'package:go_router/go_router.dart';
-
 class AppRouter {
   final AuthProvider authProvider;
 
@@ -68,6 +68,15 @@ class AppRouter {
               : const SignUpMobile(),
         ),
       ),
+      GoRoute(
+        path: AppRoutes.premiumFeature,
+        name: 'premium_feature',
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: PlatformChecker.detectPlatform() == AppPlatform.web
+              ? const PremiumFeature()
+              : const PremiumFeature(),
+        ),
+        )
     ],
   );
 }
@@ -78,4 +87,5 @@ class AppRoutes {
   static const String auth = '/auth';
   static const String authSignIn = '/auth/signin';
   static const String authSignUp = '/auth/signup';
+  static const String premiumFeature = '/premium-feature';
 }

@@ -23,16 +23,10 @@ class ChatDrawer extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: isDark
-                ? [
-                    Colors.blueGrey.shade900,
-                    Colors.indigo.shade900,
-                    Colors.deepPurple.shade900,
-                  ]
-                : [
+            colors:[
                     Colors.blue.shade400,
-                    Colors.indigo.shade500,
-                    Colors.purple.shade600,
+                    Colors.blueGrey.shade500,
+                    Colors.white,
                   ],
             stops: const [0.0, 0.5, 1.0],
           ),
@@ -113,10 +107,10 @@ class ChatDrawer extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    '© 2025 Cognix',
+                    '© 2025 Cognix AI',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.white
+                      color: Colors.black
                           .withOpacity(0.7), // better visibility on gradient
                     ),
                   ),
@@ -125,7 +119,7 @@ class ChatDrawer extends StatelessWidget {
                     'v1.0.0',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.black.withOpacity(0.5),
                     ),
                   ),
                 ],

@@ -98,7 +98,7 @@ class ChatController {
 
         // Create a simple preview text for the chat bubble
         final previewText =
-            'AI Response Ready - Tap to view Summary, Notes, or Q&A';
+            'Cognix AI Response Ready - Tap to view Summary, Notes, or Q&A';
 
         messages.add(ChatMessage(
           text: previewText,

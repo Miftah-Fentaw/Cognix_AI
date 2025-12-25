@@ -24,7 +24,7 @@ class _InputBarState extends State<InputBar> {
           children: [
             // Attach Button
             IconButton(
-              icon: Icon(Icons.attach_file, color: Colors.grey[600]),
+              icon: Icon(Icons.attach_file, color: Colors.white60),
               onPressed: () {
                 // We need to access the controller from the parent widget
                 // To keep InputBar decoupled, we should add an onFileUpload callback?

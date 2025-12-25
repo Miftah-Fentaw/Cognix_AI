@@ -5,6 +5,7 @@ import 'package:cognix/widgets/chat_drawer.dart';
 import 'package:cognix/widgets/chat_list.dart';
 import 'package:cognix/widgets/input_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class MobileHome extends StatefulWidget {
@@ -56,20 +57,41 @@ class _MobileHomeState extends State<MobileHome> {
         ),
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.menu),
+            // vertical dots option icon
+            icon: const Icon(Icons.more_vert),
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
+        // premium icon at the right aligned 
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: GestureDetector(
+              onTap: () {
+                // use go route 
+                GoRouter.of(context).go('/premium-feature');
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.all(8),
+              child: Icon(Icons.workspace_premium_outlined,color: Colors.orangeAccent,),
+            ),
+          )
+          ),
+        ],
       ),
       body: Stack(
         children: [
           // Background image
-          Positioned.fill(
-            child: Image.asset(
-              'assets/bkg.png',
-              fit: BoxFit.cover,
-            ),
-          ),
+          // Positioned.fill(
+          //   child: Image.asset(
+          //     'assets/bkg.png',
+          //     fit: BoxFit.cover,
+          //   ),
+          // ),
 
           // Optional: subtle overlay
           Positioned.fill(

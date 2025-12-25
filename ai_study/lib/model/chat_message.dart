@@ -3,18 +3,25 @@ import 'package:cognix/model/AIResponse.dart';
 class ChatMessage {
   final String text;
   final bool isUser;
-  final AIResponse? aiResponse; // Store structured backend response
+  final String?
+      filePath; // Path to local file if this message represents a file
+  final String? fileType; // e.g. 'pdf'
+  final AIResponse? aiResponse;
 
   ChatMessage({
     required this.text,
     required this.isUser,
     this.aiResponse,
+    this.filePath,
+    this.fileType,
   });
 
   Map<String, dynamic> toJson() => {
         'text': text,
         'isUser': isUser,
         'aiResponse': aiResponse?.toJson(),
+        'filePath': filePath,
+        'fileType': fileType,
       };
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
@@ -23,5 +30,7 @@ class ChatMessage {
         aiResponse: json['aiResponse'] != null
             ? AIResponse.fromJson(json['aiResponse'])
             : null,
+        filePath: json['filePath'],
+        fileType: json['fileType'],
       );
 }

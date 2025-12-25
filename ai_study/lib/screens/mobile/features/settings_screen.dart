@@ -10,7 +10,7 @@ class SettingsScreen extends StatelessWidget {
         extendBodyBehindAppBar: true,
         appBar: AppBar(
           title: const Text('Settings',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+              style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold)),
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
@@ -21,9 +21,9 @@ class SettingsScreen extends StatelessWidget {
         body: Stack(
           children: [
             // Background
-            Positioned.fill(
-              child: Image.asset('assets/background.png', fit: BoxFit.cover),
-            ),
+            // Positioned.fill(
+            //   child: Image.asset('assets/background.png', fit: BoxFit.cover),
+            // ),
             Positioned.fill(
               child: Container(color: Colors.black.withOpacity(0.6)),
             ),
@@ -33,18 +33,6 @@ class SettingsScreen extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.all(20),
                 children: [
-                  _buildSectionHeader(context, "General"),
-                  _buildSettingTile(
-                    context,
-                    icon: Icons.dark_mode_outlined,
-                    title: 'Dark Mode',
-                    trailing: Switch(
-                      value: true, // Always dark mode for now as per design
-                      onChanged: (value) {},
-                      activeColor: Colors.blueAccent,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
                   _buildSectionHeader(context, "Data & Privacy"),
                   _buildSettingTile(
                     context,

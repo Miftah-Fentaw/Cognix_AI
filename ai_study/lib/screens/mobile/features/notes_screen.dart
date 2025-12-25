@@ -65,7 +65,7 @@ class _NotesScreenState extends State<NotesScreen>
         slivers: [
           // Modern App Bar with gradient
           SliverAppBar(
-            expandedHeight: 120,
+            expandedHeight: 60,
             floating: false,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
@@ -81,9 +81,7 @@ class _NotesScreenState extends State<NotesScreen>
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: isDark
-                        ? [Colors.green.shade900, Colors.teal.shade900]
-                        : [Colors.green.shade400, Colors.teal.shade400],
+                    colors:  [Colors.green.shade400, Colors.white70],
                   ),
                 ),
               ),

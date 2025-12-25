@@ -11,9 +11,9 @@ class EmptyState extends StatelessWidget {
         children:  [
           Image.asset("assets/cognix.png", height: 50,),
           SizedBox(height: 16),
-          Text('Welcome to Cognix'),
+          Text('Welcome to Cognix',style: TextStyle(color: Colors.white),),
           SizedBox(height: 8),
-          Text('Paste text to get summaries, notes, and Q&A'),
+          Text('Paste text to get summaries, notes, and Q&A',style: TextStyle(color: Colors.white),),
         ],
       ),
     );
