@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -26,6 +28,8 @@ class _PremiumFeatureState extends State<PremiumFeature> {
   String? _statusMessage;
   String? _generatedFilePath; // Path to succesful PDF
 
+  final String finegenerating = 'http://10.230.37.240:8000/api/generate-pdf/';
+
   Future<void> _generateStudyMaterial() async {
     final topic = _topicController.text.trim();
     if (topic.isEmpty) {
@@ -42,9 +46,8 @@ class _PremiumFeatureState extends State<PremiumFeature> {
     });
 
     try {
-      // 1. Send Request
-      // Using IP 10.230.37.240 as requested from `ip a` output (enp0s31f6)
-      final url = Uri.parse('http://10.230.37.240:8000/api/generate-pdf/');
+      // send request for file generation
+      final url = Uri.parse(finegenerating);
 
       // Simulate progress updates for better UX during long wait
       _simulateProgress();

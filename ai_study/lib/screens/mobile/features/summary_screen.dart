@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
@@ -12,8 +14,7 @@ class SummaryScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Split summary into paragraphs for better formatting
-    final paragraphs =
-        summary.split('\n\n').where((p) => p.trim().isNotEmpty).toList();
+    final paragraphs = summary.split('\n\n').where((p) => p.trim().isNotEmpty).toList();
 
     // Estimate reading time (average 200 words per minute)
     final wordCount = summary.split(' ').length;
@@ -22,7 +23,8 @@ class SummaryScreen extends StatelessWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          // Modern App Bar with gradient
+
+          // app bar
           SliverAppBar(
             expandedHeight: 60,
             floating: false,
@@ -78,6 +80,8 @@ class SummaryScreen extends StatelessWidget {
               ),
             ],
           ),
+
+          
 
           // Content
           SliverToBoxAdapter(

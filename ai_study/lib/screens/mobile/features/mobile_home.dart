@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:cognix/controler/chat_controller.dart';
 import 'package:cognix/screens/mobile/features/chat_history_screen.dart';
 import 'package:cognix/screens/mobile/features/settings_screen.dart';
@@ -21,21 +23,19 @@ class _MobileHomeState extends State<MobileHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true, // ← makes background visible behind appbar
+      extendBodyBehindAppBar: true, // ← makes appbar transparent 
       drawer: ChatDrawer(
         onNewChat: () {
-          // Navigator.pop(context) is already called in the drawer
           controller.clearChat(setState);
         },
         onShowHistory: () {
-          // Navigator.pop(context) is already called in the drawer
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => ChatHistoryScreen(
                 onChatSelected: (session) async {
                   await controller.loadChat(session);
-                  setState(() {}); // Refresh UI with loaded messages
+                  setState(() {}); 
                 },
               ),
             ),
@@ -48,6 +48,8 @@ class _MobileHomeState extends State<MobileHome> {
           );
         },
       ),
+
+
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -55,13 +57,15 @@ class _MobileHomeState extends State<MobileHome> {
           'Cognix',
           style: GoogleFonts.aDLaMDisplay(),
         ),
+
+        // Drawer icon
         leading: Builder(
           builder: (context) => IconButton(
-            // vertical dots option icon
             icon: const Icon(Icons.more_vert),
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
+
         // premium icon at the right aligned 
         actions: [
           Padding(
@@ -82,21 +86,16 @@ class _MobileHomeState extends State<MobileHome> {
           )
           ),
         ],
+
+
       ),
       body: Stack(
         children: [
-          // Background image
-          // Positioned.fill(
-          //   child: Image.asset(
-          //     'assets/bkg.png',
-          //     fit: BoxFit.cover,
-          //   ),
-          // ),
-
-          // Optional: subtle overlay
+          
+          // optional background overlay
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.25), // adjust opacity
+              color: Colors.black.withOpacity(0.25), 
             ),
           ),
 

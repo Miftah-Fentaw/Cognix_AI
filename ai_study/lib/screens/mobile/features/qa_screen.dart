@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:cognix/model/AIResponse.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -92,10 +94,7 @@ class _QAScreenState extends State<QAScreen> {
       ),
       body: Stack(
         children: [
-          // Consistent Background
-          // Positioned.fill(
-          //   child: Image.asset('assets/background.png', fit: BoxFit.cover),
-          // ),
+          
           Positioned.fill(
             child: Container(color: Colors.black.withOpacity(0.6)),
           ),

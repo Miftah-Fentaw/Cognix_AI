@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:cognix/services/chat_history_service.dart';
 
@@ -20,10 +22,6 @@ class SettingsScreen extends StatelessWidget {
         ),
         body: Stack(
           children: [
-            // Background
-            // Positioned.fill(
-            //   child: Image.asset('assets/background.png', fit: BoxFit.cover),
-            // ),
             Positioned.fill(
               child: Container(color: Colors.black.withOpacity(0.6)),
             ),
