@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, curly_braces_in_flow_control_structures
+
 import 'dart:convert';
 import 'package:cognix/model/chat_message.dart';
 import 'package:cognix/model/AIResponse.dart';
@@ -9,18 +11,18 @@ import 'package:file_picker/file_picker.dart';
 class ChatController {
   List<ChatMessage> messages = [];
   bool isLoading = false;
+  final String textEndpoint = 'http://10.230.37.240:8000/api/process-text/';
+  final String fileEndpoint = 'http://10.230.37.240:8000/api/process-file/';
 
-  // Backend endpoints to try (order: LAN IP, emulator, localhost via adb reverse)
-  final List<String> backendCandidates = [
-    'http://10.230.37.240:8000/api/process-text/', // Current LAN IP
-    'http://10.0.2.2:8000/api/process-text/', // Android emulator host
-    'http://127.0.0.1:8000/api/process-text/', // adb reverse maps device localhost to host
-  ];
+  // final List<String> backendCandidates = [
+  //   'http://10.230.37.240:8000/api/process-text/', // Current LAN IP
+  //   'http://10.0.2.2:8000/api/process-text/', // Android emulator host
+  //   'http://127.0.0.1:8000/api/process-text/', // adb reverse maps device localhost to host
+  // ];
 
   final ChatHistoryService _historyService = ChatHistoryService();
   String? _currentChatId;
 
-  // Constructor to start a fresh chat on init if needed
   ChatController() {
     startNewChat();
   }
@@ -56,6 +58,7 @@ class ChatController {
     await _historyService.saveChat(session);
   }
 
+  // Send text message to backend and handle response
   void sendMessage(String text, Function setState) async {
     if (text.trim().isEmpty) return;
 
@@ -65,32 +68,15 @@ class ChatController {
     setState(() {});
 
     try {
-      // Try candidate endpoints sequentially until one succeeds
-      http.Response? response;
-      String? usedUrl;
-      for (final url in backendCandidates) {
-        try {
-          print('Trying POST $url body=${jsonEncode({'text': text})}');
-          response = await http.post(
-            Uri.parse(url),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode({'text': text}),
-          );
-          print('Response from $url: ${response.statusCode}');
-          if (response.statusCode == 200) {
-            usedUrl = url;
-            break;
-          }
-        } catch (e) {
-          print('Failed to reach $url: $e');
-          // try next
-        }
-      }
-
-      if (response == null)
-        throw Exception('No response from any backend candidates');
+      print('POST $textEndpoint body=${jsonEncode({'text': text})}');
+      final response = await http.post(
+        Uri.parse(textEndpoint),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'text': text}),
+      );
 
       if (response.statusCode == 200) {
+        // Success
         final data = jsonDecode(response.body);
 
         // Parse the JSON response into AIResponse model
@@ -106,7 +92,7 @@ class ChatController {
           aiResponse: aiResponse, // Store structured data
         ));
 
-        // Save chat after successful response
+        // Save chat after successful response for offline access
         await _saveCurrentChat();
       } else {
         messages.add(ChatMessage(
@@ -119,6 +105,8 @@ class ChatController {
     isLoading = false;
     setState(() {});
   }
+
+  // Handle file picking, uploading, and response processing
 
   Future<void> pickAndUploadFile(Function setState) async {
     try {
@@ -141,41 +129,20 @@ class ChatController {
       isLoading = true;
       setState(() {});
 
-      // 2. Upload to Backend
-      // We'll reuse the backend selection logic or just try the first working one
-      // For simplicity, we'll iterate candidates again or use a known good one if stored.
-      // Since we don't persist 'usedUrl', we'll loop.
+      print('POST FILE $fileEndpoint');
 
-      http.StreamedResponse? streamedResponse;
+      var request = http.MultipartRequest('POST', Uri.parse(fileEndpoint));
+      request.files.add(await http.MultipartFile.fromPath('file', filePath));
 
-      for (final baseUrl in backendCandidates) {
-        try {
-          // Construct correct file endpoint from the base text endpoint
-          // e.g. http://.../api/process-text/ -> http://.../api/process-file/
-          final fileUrl = baseUrl.replaceAll('process-text/', 'process-file/');
+      final streamedResponse = await request.send();
 
-          print('Trying POST FILE $fileUrl');
-
-          var request = http.MultipartRequest('POST', Uri.parse(fileUrl));
-          request.files
-              .add(await http.MultipartFile.fromPath('file', filePath));
-
-          streamedResponse = await request.send();
-
-          if (streamedResponse.statusCode == 200) {
-            break;
-          }
-        } catch (e) {
-          print('Upload failed to $baseUrl: $e');
-        }
-      }
-
-      if (streamedResponse == null || streamedResponse.statusCode != 200) {
+      // if upload failed
+      if (streamedResponse.statusCode != 200) {
         throw Exception(
-            'Upload failed. Server returned ${streamedResponse?.statusCode ?? "no response"}');
+            'Upload failed. Server returned ${streamedResponse.statusCode}');
       }
 
-      // 3. Process Response
+      // if upload succeeded
       final responseBody = await streamedResponse.stream.bytesToString();
       final data = jsonDecode(responseBody);
       final aiResponse = AIResponse.fromJson(data);
