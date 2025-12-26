@@ -40,7 +40,11 @@ class AppRouter {
               : const MobileHome(),
         ),
       ),
-      // Keep old auth routes just in case, or for future use
+
+
+
+
+      // Keep old auth routes for future use
       GoRoute(
         path: AppRoutes.auth,
         name: 'auth',
@@ -68,6 +72,13 @@ class AppRouter {
               : const SignUpMobile(),
         ),
       ),
+
+
+
+
+
+
+
       GoRoute(
         path: AppRoutes.premiumFeature,
         name: 'premium_feature',
