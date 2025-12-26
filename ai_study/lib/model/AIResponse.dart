@@ -3,6 +3,8 @@ class QuizQuestion {
   final List<String> options;
   final String answer;
 
+
+// response model for quiz question
   QuizQuestion({
     required this.question,
     required this.options,

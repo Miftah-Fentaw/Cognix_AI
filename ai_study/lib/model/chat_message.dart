@@ -3,9 +3,8 @@ import 'package:cognix/model/AIResponse.dart';
 class ChatMessage {
   final String text;
   final bool isUser;
-  final String?
-      filePath; // Path to local file if this message represents a file
-  final String? fileType; // e.g. 'pdf'
+  final String? filePath; // Path to local file if this message represents a file
+  final String? fileType; 
   final AIResponse? aiResponse;
 
   ChatMessage({
