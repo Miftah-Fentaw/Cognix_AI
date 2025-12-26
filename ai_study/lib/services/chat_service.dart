@@ -3,28 +3,7 @@ import 'package:cognix/model/AIResponse.dart';
 import 'package:http/http.dart' as http;
 
 
-// class ChatService {
-//   Future<String> processText(String input) async {
-//     // TODO: Replace with HTTP POST to Django
-//     await Future.delayed(const Duration(seconds: 2));
-
-//     return '''
-// 📘 Summary:
-// This is a generated academic summary.
-
-// 📝 Notes:
-// • Key idea one
-// • Key idea two
-
-// ❓ Q&A:
-// Q: What is the topic?
-// A: The topic is...
-// ''';
-//   }
-// }
-
-
-
+// text based input manager to talk to AI server(grokk)
 class AIService {
   static Future<AIResponse> fetchAIResponse(String text) async {
     final url = Uri.parse("http://192.168.0.132:8000/api/process-text/");
