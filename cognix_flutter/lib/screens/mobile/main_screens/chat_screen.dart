@@ -10,14 +10,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class MobileHome extends StatefulWidget {
-  const MobileHome({super.key});
+class chatting_screen extends StatefulWidget {
+  const chatting_screen({super.key});
 
   @override
-  State<MobileHome> createState() => _MobileHomeState();
+  State<chatting_screen> createState() => _chatting_screenState();
 }
 
-class _MobileHomeState extends State<MobileHome> {
+class _chatting_screenState extends State<chatting_screen> {
   final ChatController controller = ChatController();
 
   @override

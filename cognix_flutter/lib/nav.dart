@@ -2,8 +2,9 @@ import 'package:cognix/providers/auth_provider.dart';
 import 'package:cognix/screens/mobile/auth/mobile_signin.dart';
 import 'package:cognix/screens/mobile/auth/mobile_signup.dart';
 import 'package:cognix/screens/mobile/auth/mobile_welcome.dart';
-import 'package:cognix/screens/mobile/features/mobile_home.dart';
-import 'package:cognix/screens/mobile/features/premium_feature.dart';
+import 'package:cognix/screens/mobile/main_screens/chat_screen.dart';
+import 'package:cognix/screens/mobile/main_screens/home_screen.dart';
+import 'package:cognix/screens/mobile/main_screens/premium_feature.dart';
 import 'package:cognix/screens/mobile/onboarding/onboarding_screen.dart';
 import 'package:cognix/screens/web/auth/web_signin.dart';
 import 'package:cognix/screens/web/auth/web_signup.dart';
@@ -38,6 +39,15 @@ class AppRouter {
           child: PlatformChecker.detectPlatform() == AppPlatform.web
               ? const WebHome()
               : const MobileHome(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.chat,
+        name: 'chat',
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: PlatformChecker.detectPlatform() == AppPlatform.web
+              ? const WebHome()
+              : const chatting_screen(),
         ),
       ),
 
@@ -99,4 +109,5 @@ class AppRoutes {
   static const String authSignIn = '/auth/signin';
   static const String authSignUp = '/auth/signup';
   static const String premiumFeature = '/premium-feature';
+  static const String chat = '/chat';
 }
