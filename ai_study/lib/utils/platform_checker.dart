@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, Tar
 
 
 
+//check if platform is mobile or web
 enum AppPlatform { mobile, web}
 
 class PlatformChecker {
