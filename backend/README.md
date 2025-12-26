@@ -4,7 +4,7 @@ Overview
 
 Django-based API that orchestrates AI interactions, handles file generation
 (PDF/DOCX/PPTX), and stores minimal state in `db.sqlite3` by default. The
-backend exposes endpoints used by the Flutter client (`ai_study/`).
+backend exposes endpoints used by the Flutter client (`cognix_fltter/`).
 
 Prerequisites
 - Python 3.10+ (virtual environment recommended)

@@ -1,4 +1,4 @@
-**Cognix — Flutter client (ai_study)**
+**Cognix — Flutter client**
 
 Overview
 
@@ -17,7 +17,7 @@ Prerequisites
 Quick setup
 1. Ensure the backend is running and reachable from your device (use IP,
 	 not localhost for real devices).
-2. From `ai_study/` run:
+2. From `cognix_flutter/` run:
 
 ```bash
 flutter pub get
@@ -38,4 +38,4 @@ Notes
 - Keep UI changes focused and maintain separation: client = UI, backend = AI.
 
 License
-See the project `LICENSE` (root) or `ai_study/LICENSE` for terms.
+See the project `LICENSE` (root) or `cognix_flutter/LICENSE` for terms.
