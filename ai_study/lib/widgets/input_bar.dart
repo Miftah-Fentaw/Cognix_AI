@@ -22,17 +22,15 @@ class _InputBarState extends State<InputBar> {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            // Attach Button
+            
             IconButton(
               icon: Icon(Icons.attach_file, color: Colors.white60),
               onPressed: () {
-                // We need to access the controller from the parent widget
-                // To keep InputBar decoupled, we should add an onFileUpload callback?
-                // OR, just for now, since the user wants it implemented, we can modify the constructor
-                // But wait, the InputBar takes `onSend`. Let's add `onAttachment`.
                 widget.onAttachment?.call();
               },
             ),
+
+
 
             // Text Field
             Expanded(

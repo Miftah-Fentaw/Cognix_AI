@@ -144,10 +144,10 @@ class ChatBubble extends StatelessWidget {
   }
 
   Widget _buildAiBubble(BuildContext context, bool isDark, String rawText) {
-    // Use structured data if available, otherwise show error message
+    // if structured response use it in the apo else
     final aiResponse = message.aiResponse;
 
-    // If no structured data, just show the text (error message)
+    // show error message
     if (aiResponse == null) {
       return Align(
         alignment: Alignment.centerLeft,

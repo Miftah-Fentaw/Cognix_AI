@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+import 'package:cognix/widgets/drawer_item.dart';
 import 'package:flutter/material.dart';
 
 class ChatDrawer extends StatelessWidget {
@@ -14,10 +16,9 @@ class ChatDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Drawer(
-      backgroundColor: Colors.transparent, // ← Required for gradient to show
+      backgroundColor: Colors.transparent, 
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -62,7 +63,7 @@ class ChatDrawer extends StatelessWidget {
                     const Text(
                       'Cognix',
                       style: TextStyle(
-                        fontFamily: 'ADLaMDisplay', // Using the custom font
+                        fontFamily: 'ADLaMDisplay', 
                         fontSize: 24,
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -74,8 +75,7 @@ class ChatDrawer extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            // Your original content (unchanged)
-            _DrawerItem(
+            DrawerItem(
               icon: Icons.chat_bubble_outline,
               label: 'New Chat',
               onTap: () {
@@ -83,15 +83,15 @@ class ChatDrawer extends StatelessWidget {
                 Navigator.pop(context);
               },
             ),
-            _DrawerItem(
+            DrawerItem(
               icon: Icons.history,
               label: 'Chat History',
               onTap: () {
-                Navigator.pop(context); // Close drawer
-                onShowHistory(); // Trigger show history callback
+                Navigator.pop(context); 
+                onShowHistory(); 
               },
             ),
-            _DrawerItem(
+            DrawerItem(
               icon: Icons.settings,
               label: 'Settings',
               onTap: () {
@@ -111,7 +111,7 @@ class ChatDrawer extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.black
-                          .withOpacity(0.7), // better visibility on gradient
+                          .withOpacity(0.7), 
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -128,55 +128,6 @@ class ChatDrawer extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _DrawerItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  const _DrawerItem({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 2),
-      leading: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.15), // subtle contrast on gradient
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child:
-            Icon(icon, color: Colors.white, size: 22), // white for visibility
-      ),
-      title: Text(
-        label,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: Colors.white, // better contrast on gradient
-        ),
-      ),
-      trailing: Icon(
-        Icons.chevron_right,
-        color: Colors.white.withOpacity(0.6),
-        size: 20,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.transparent),
-      ),
-      onTap: onTap,
-      hoverColor: Colors.white.withOpacity(0.15),
     );
   }
 }
