@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cognix/model/chat_message.dart';
-import 'package:cognix/model/AIResponse.dart';
+import 'package:cognix/models/chat_message.dart';
+import 'package:cognix/models/AIResponse.dart';
 
 class ChatSession {
   final String id;

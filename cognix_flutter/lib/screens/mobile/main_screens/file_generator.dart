@@ -3,7 +3,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cognix/model/chat_message.dart';
+import 'package:cognix/models/chat_message.dart';
 import 'package:cognix/services/chat_history_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

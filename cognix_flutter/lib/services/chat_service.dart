@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:cognix/model/AIResponse.dart';
+import 'package:cognix/models/AIResponse.dart';
 import 'package:http/http.dart' as http;
 
 

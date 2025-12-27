@@ -1,4 +1,4 @@
-import 'package:cognix/model/AIResponse.dart';
+import 'package:cognix/models/AIResponse.dart';
 
 class ChatMessage {
   final String text;

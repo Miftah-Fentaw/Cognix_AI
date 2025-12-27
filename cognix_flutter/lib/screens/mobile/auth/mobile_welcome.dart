@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../nav.dart';
+import 'package:cognix/config/router.dart';
 
 class MobileWelcome extends StatelessWidget {
   const MobileWelcome({super.key});

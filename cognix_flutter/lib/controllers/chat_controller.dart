@@ -1,8 +1,8 @@
 // ignore_for_file: avoid_print, curly_braces_in_flow_control_structures
 
 import 'dart:convert';
-import 'package:cognix/model/chat_message.dart';
-import 'package:cognix/model/AIResponse.dart';
+import 'package:cognix/models/chat_message.dart';
+import 'package:cognix/models/AIResponse.dart';
 import 'package:cognix/services/chat_history_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';

@@ -1,6 +1,8 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:cognix/config/router.dart';
 import 'package:cognix/services/chat_history_service.dart';
 import 'package:intl/intl.dart';
 
@@ -49,7 +51,13 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go(AppRoutes.home);
+              }
+            },
           ),
         ),
         body: Stack(
@@ -140,8 +148,6 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
                                     color: Colors.white38),
                                 onTap: () {
                                   widget.onChatSelected(session);
-                                  Navigator.pop(
-                                      context); // Close history screen
                                 },
                               ),
                             ),

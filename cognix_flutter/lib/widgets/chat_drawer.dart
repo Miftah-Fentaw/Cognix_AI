@@ -3,35 +3,21 @@ import 'package:cognix/widgets/drawer_item.dart';
 import 'package:flutter/material.dart';
 
 class ChatDrawer extends StatelessWidget {
-  final VoidCallback onNewChat;
   final VoidCallback onShowHistory;
+  final VoidCallback onResumeHistory;
   final VoidCallback onShowSettings;
 
   const ChatDrawer({
     super.key,
-    required this.onNewChat,
     required this.onShowHistory,
+    required this.onResumeHistory,
     required this.onShowSettings,
   });
 
   @override
   Widget build(BuildContext context) {
-
     return Drawer(
-      backgroundColor: Colors.transparent, 
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors:[
-                    Colors.blue.shade400,
-                    Colors.blueGrey.shade500,
-                    Colors.white,
-                  ],
-            stops: const [0.0, 0.5, 1.0],
-          ),
-        ),
+      backgroundColor: Colors.white.withOpacity(0.9),
         child: Column(
           children: [
             DrawerHeader(
@@ -48,7 +34,7 @@ class ChatDrawer extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                            color: Colors.white.withOpacity(0.3), width: 2),
+                            color: Colors.orange.withOpacity(0.3), width: 2),
                       ),
                       child: CircleAvatar(
                         radius: 32,
@@ -63,9 +49,9 @@ class ChatDrawer extends StatelessWidget {
                     const Text(
                       'Cognix',
                       style: TextStyle(
-                        fontFamily: 'ADLaMDisplay', 
+                        fontFamily: 'ADLaMDisplay',
                         fontSize: 24,
-                        color: Colors.white,
+                        color: Colors.black87,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.2,
                       ),
@@ -76,19 +62,19 @@ class ChatDrawer extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             DrawerItem(
-              icon: Icons.chat_bubble_outline,
-              label: 'New Chat',
-              onTap: () {
-                onNewChat();
-                Navigator.pop(context);
-              },
-            ),
-            DrawerItem(
               icon: Icons.history,
               label: 'Chat History',
               onTap: () {
-                Navigator.pop(context); 
-                onShowHistory(); 
+                Navigator.pop(context);
+                onShowHistory();
+              },
+            ),
+            DrawerItem(
+              icon: Icons.description_outlined,
+              label: 'Resume History',
+              onTap: () {
+                Navigator.pop(context);
+                onResumeHistory();
               },
             ),
             DrawerItem(
@@ -99,7 +85,6 @@ class ChatDrawer extends StatelessWidget {
                 onShowSettings();
               },
             ),
-
             const Spacer(),
             Container(
               padding: const EdgeInsets.all(24),
@@ -110,8 +95,7 @@ class ChatDrawer extends StatelessWidget {
                     '© 2025 Cognix AI',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.black
-                          .withOpacity(0.7), 
+                      color: Colors.black.withOpacity(0.7),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -127,7 +111,6 @@ class ChatDrawer extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }

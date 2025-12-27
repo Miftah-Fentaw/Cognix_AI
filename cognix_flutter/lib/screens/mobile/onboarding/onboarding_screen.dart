@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../nav.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cognix/config/router.dart';
+import '../../../utils/constants.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -33,6 +35,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           'Track your progress and master your subjects with AI-powered insights.',
     ),
   ];
+
+  Future<void> _completeOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(AppConstants.onboardingSeenKey, true);
+    if (mounted) {
+      context.go(AppRoutes.home);
+    }
+  }
+
+  Future<void> _skipOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(AppConstants.onboardingSeenKey, true);
+    if (mounted) {
+      context.go(AppRoutes.home);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,13 +156,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         SizedBox(
                           width: double.infinity,
                           child: FilledButton(
-                            onPressed: () => context.go(AppRoutes.home),
+                            onPressed: _completeOnboarding,
                             style: FilledButton.styleFrom(
                               backgroundColor: const Color(0xFF6366f1),
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 18),
                               elevation: 8,
-                              shadowColor:
+                                shadowColor:
                                   const Color(0xFF6366f1).withOpacity(0.5),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
@@ -164,7 +182,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             TextButton(
-                              onPressed: () => context.go(AppRoutes.home),
+                              onPressed: _skipOnboarding,
                               child: Text(
                                 "Skip",
                                 style: GoogleFonts.outfit(

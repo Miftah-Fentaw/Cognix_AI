@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cognix/screens/mobile/features/notes_screen.dart';
 import 'package:cognix/screens/mobile/features/qa_screen.dart';
 import 'package:cognix/screens/mobile/features/summary_screen.dart';
-import 'package:cognix/model/chat_message.dart';
+import 'package:cognix/models/chat_message.dart';
 import 'package:open_file/open_file.dart';
 
 class ChatBubble extends StatelessWidget {

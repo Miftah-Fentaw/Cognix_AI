@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:cognix/model/chat_message.dart';
+import 'package:cognix/models/chat_message.dart';
 import 'package:cognix/widgets/chat_bubble.dart';
 import 'package:cognix/widgets/chat_drawer.dart';
 import 'dart:ui';
@@ -56,15 +56,22 @@ class _WebHomeState extends State<WebHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: ChatDrawer(
-        onNewChat: () {
-          setState(() => _messages.clear());
-          Navigator.pop(context);
-        },
+        // onNewChat: () {
+        //   setState(() => _messages.clear());
+        //   Navigator.pop(context);
+        // },
         onShowHistory: () {
           // Web history not implemented yet
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('History not available on web yet')),
+          );
+        },
+        onResumeHistory: () {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Resume History not available on web yet')),
           );
         },
         onShowSettings: () {

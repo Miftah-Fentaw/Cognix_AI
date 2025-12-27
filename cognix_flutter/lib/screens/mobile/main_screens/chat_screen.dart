@@ -1,101 +1,70 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:cognix/controler/chat_controller.dart';
-import 'package:cognix/screens/mobile/features/chat_history_screen.dart';
-import 'package:cognix/screens/mobile/features/settings_screen.dart';
-import 'package:cognix/widgets/chat_drawer.dart';
+import 'package:cognix/controllers/chat_controller.dart';
+import 'package:cognix/services/chat_history_service.dart';
 import 'package:cognix/widgets/chat_list.dart';
 import 'package:cognix/widgets/input_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class chatting_screen extends StatefulWidget {
-  const chatting_screen({super.key});
+class ChattingScreen extends StatefulWidget {
+  final ChatSession? session;
+  const ChattingScreen({super.key, this.session});
 
   @override
-  State<chatting_screen> createState() => _chatting_screenState();
+  State<ChattingScreen> createState() => _ChattingScreenState();
 }
 
-class _chatting_screenState extends State<chatting_screen> {
+class _ChattingScreenState extends State<ChattingScreen> {
   final ChatController controller = ChatController();
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.session != null) {
+      controller.loadChat(widget.session!);
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true, // ← makes appbar transparent 
-      drawer: ChatDrawer(
-        onNewChat: () {
-          controller.clearChat(setState);
-        },
-        onShowHistory: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ChatHistoryScreen(
-                onChatSelected: (session) async {
-                  await controller.loadChat(session);
-                  setState(() {}); 
-                },
-              ),
-            ),
-          );
-        },
-        onShowSettings: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const SettingsScreen()),
-          );
-        },
-      ),
-
+      extendBodyBehindAppBar: true, // ← makes appbar transparent
 
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text(
-          'Cognix',
-          style: GoogleFonts.aDLaMDisplay(),
-        ),
-
-        // Drawer icon
-        leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
-        ),
-
-        // premium icon at the right aligned 
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: GestureDetector(
-              onTap: () {
-                // use go route 
-                GoRouter.of(context).go('/premium-feature');
+        automaticallyImplyLeading: false, // Remove default back button
+        title: Row(
+          children: [
+            // New Chat button in top left
+            IconButton(
+              onPressed: () {
+                controller.startNewChat();
+                setState(() {});
               },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(12),
+              icon: const Icon(
+                Icons.add_circle_outline,
+                color: Colors.white,
+                size: 28,
               ),
-              padding: const EdgeInsets.all(8),
-              child: Icon(Icons.workspace_premium_outlined,color: Colors.orangeAccent,),
+              tooltip: 'New Chat',
             ),
-          )
-          ),
-        ],
-
-
+            const SizedBox(width: 8),
+            Text(
+              'Cognix',
+              style: GoogleFonts.aDLaMDisplay(
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
       ),
       body: Stack(
         children: [
-          
           // optional background overlay
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.25), 
+              color: Colors.black.withOpacity(0.25),
             ),
           ),
 
