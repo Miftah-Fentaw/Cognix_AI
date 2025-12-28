@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cognix/models/chat_message.dart';
-import 'package:cognix/models/AIResponse.dart';
 
 class ChatSession {
   final String id;
   final DateTime timestamp;
-  final String preview; // Short text to show in history list
+  final String preview; 
   final List<ChatMessage> messages;
 
   ChatSession({

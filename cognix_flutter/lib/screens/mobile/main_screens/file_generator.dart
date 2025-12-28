@@ -1,10 +1,13 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:cognix/models/chat_message.dart';
 import 'package:cognix/services/chat_history_service.dart';
+import 'package:cognix/widgets/file_generator/generate_button.dart';
+import 'package:cognix/widgets/file_generator/length_slider_section.dart';
+import 'package:cognix/widgets/file_generator/premium_header.dart';
+import 'package:cognix/widgets/file_generator/success_view.dart';
+import 'package:cognix/widgets/file_generator/topic_input_section.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -26,7 +29,7 @@ class _PremiumFeatureState extends State<PremiumFeature> {
   double _pageCount = 10;
   bool _isLoading = false;
   String? _statusMessage;
-  String? _generatedFilePath; // Path to succesful PDF
+  String? _generatedFilePath; // Path to successful PDF
 
   final String finegenerating = 'http://10.230.37.240:8000/api/generate-pdf/';
 
@@ -165,16 +168,33 @@ class _PremiumFeatureState extends State<PremiumFeature> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(),
+              const PremiumHeader(),
               const SizedBox(height: 32),
               if (_generatedFilePath != null)
-                _buildSuccessView()
+                SuccessView(
+                  generatedFilePath: _generatedFilePath!,
+                  onOpenPDF: () => OpenFile.open(_generatedFilePath),
+                  onShare: () => Share.shareXFiles([XFile(_generatedFilePath!)],
+                      text: 'Here is my study guide!'),
+                  onCreateAnother: () {
+                    setState(() {
+                      _generatedFilePath = null;
+                      _topicController.clear();
+                    });
+                  },
+                )
               else ...[
-                _buildInputSection(),
+                TopicInputSection(controller: _topicController),
                 const SizedBox(height: 24),
-                _buildSliderSection(),
+                LengthSliderSection(
+                  pageCount: _pageCount,
+                  onChanged: (value) => setState(() => _pageCount = value),
+                ),
                 const SizedBox(height: 40),
-                _buildGenerateButton(),
+                GenerateButton(
+                  isLoading: _isLoading,
+                  onPressed: _isLoading ? null : _generateStudyMaterial,
+                ),
               ],
               if (_isLoading) ...[
                 const SizedBox(height: 32),
@@ -196,295 +216,6 @@ class _PremiumFeatureState extends State<PremiumFeature> {
               ]
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSuccessView() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.amber.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-        border: Border.all(color: Colors.amber.withOpacity(0.3)),
-      ),
-      child: Column(
-        children: [
-          const Icon(Icons.check_circle, color: Colors.green, size: 64),
-          const SizedBox(height: 16),
-          Text(
-            "Study Package Ready!",
-            style: GoogleFonts.outfit(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "Your custom study material has been generated and saved to your history.",
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
-          ),
-          const SizedBox(height: 32),
-
-          // ACTIONS
-          _buildActionButton(
-            label: "Open PDF",
-            icon: Icons.visibility,
-            color: Colors.black87,
-            onTap: () => OpenFile.open(_generatedFilePath),
-          ),
-          const SizedBox(height: 12),
-          _buildActionButton(
-            label: "Share / Save",
-            icon: Icons.share,
-            color: Colors.blue[700]!,
-            onTap: () => Share.shareXFiles([XFile(_generatedFilePath!)],
-                text: 'Here is my study guide!'),
-          ),
-          const SizedBox(height: 12),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                _generatedFilePath = null;
-                _topicController.clear();
-              });
-            },
-            child: Text("Create Another",
-                style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButton(
-      {required String label,
-      required IconData icon,
-      required Color color,
-      required VoidCallback onTap}) {
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          foregroundColor: Colors.white,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          elevation: 0,
-        ),
-        onPressed: onTap,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 20),
-            const SizedBox(width: 8),
-            Text(label,
-                style: GoogleFonts.inter(
-                    fontSize: 16, fontWeight: FontWeight.w600)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.amber[100],
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.amber),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.star, size: 16, color: Colors.amber),
-              const SizedBox(width: 4),
-              Text(
-                "PREMIUM",
-                style: GoogleFonts.inter(
-                  color: Colors.amber[900],
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          "Generate Comprehensive\nStudy Packages",
-          style: GoogleFonts.outfit(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-            height: 1.1,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          "Enter a topic and let our AI create a detailed 10-15 page study guide for you.",
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            color: Colors.grey[600],
-            height: 1.5,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildInputSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "TOPIC OR CONTENT",
-          style: GoogleFonts.inter(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey[500],
-            letterSpacing: 1.2,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: TextField(
-            controller: _topicController,
-            maxLines: 4,
-            decoration: InputDecoration(
-              hintText:
-                  "e.g., The French Revolution, Quantum Mechanics basics, or paste your rough notes here...",
-              hintStyle: GoogleFonts.inter(color: Colors.grey[400]),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide.none,
-              ),
-              contentPadding: const EdgeInsets.all(20),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSliderSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "TARGET LENGTH",
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[500],
-                letterSpacing: 1.2,
-              ),
-            ),
-            Text(
-              "${_pageCount.toInt()} Pages",
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue[600],
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            activeTrackColor: Colors.blue[600],
-            inactiveTrackColor: Colors.blue[100],
-            thumbColor: Colors.white,
-            overlayColor: Colors.blue.withOpacity(0.1),
-            thumbShape: const RoundSliderThumbShape(
-                enabledThumbRadius: 12, elevation: 4),
-            trackHeight: 6,
-          ),
-          child: Slider(
-            value: _pageCount,
-            min: 10,
-            max: 15,
-            divisions: 5,
-            onChanged: (value) => setState(() => _pageCount = value),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("10 pgs",
-                  style: GoogleFonts.inter(fontSize: 12, color: Colors.grey)),
-              Text("15 pgs",
-                  style: GoogleFonts.inter(fontSize: 12, color: Colors.grey)),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildGenerateButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: _isLoading ? null : _generateStudyMaterial,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black87,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.auto_awesome, color: Colors.amber),
-            const SizedBox(width: 12),
-            Text(
-              "Generate Study Guide",
-              style: GoogleFonts.inter(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-            ),
-          ],
         ),
       ),
     );

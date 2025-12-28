@@ -45,8 +45,7 @@ class MobileHome extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context);
-                context.go(AppRoutes.premiumFeature);
+                
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
@@ -125,7 +124,11 @@ class MobileHome extends StatelessWidget {
                         dialogType: DialogType.info,
                         body: Center(
                           child: Text(
-                            'If the body is specified, then title and description will be ignored, this allows to further customize the dialogue.',
+                            // help message about app crashing and premium feature
+                            ' - premium features are only available for premium users\n'
+                            ' - app may crash if you try to use premium features without a subscription\n'
+                            ' - resume generated from resume generation highly depend on the data you give\n'
+                            ' - some features of the app still being developed, wait coming soon',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontStyle: FontStyle.italic),

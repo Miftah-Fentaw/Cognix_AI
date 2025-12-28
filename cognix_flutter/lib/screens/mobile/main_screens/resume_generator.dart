@@ -1,11 +1,14 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:file_picker/file_picker.dart';
+import 'dart:io';
 import '../../../models/resume_models.dart';
 import '../../../services/resume_service.dart';
-import '../../../widgets/resume/resume_section.dart';
-import '../../../widgets/resume/resume_input_field.dart';
+import '../../../widgets/resume/resume_generator_header.dart';
+import '../../../widgets/resume/social_links_section.dart';
+import '../../../widgets/resume/professional_summary_section.dart';
+import '../../../widgets/resume/skills_section.dart';
+import '../../../widgets/resume/resume_action_buttons.dart';
 import '../../../widgets/resume/personal_info_widget.dart';
 import '../../../widgets/resume/work_experience_widget.dart';
 import '../../../widgets/resume/education_widget.dart';
@@ -23,7 +26,7 @@ class _ResumeGeneratorState extends State<ResumeGenerator> {
   final _formKey = GlobalKey<FormState>();
   late ResumeData _resumeData;
   bool _isGenerating = false;
-  
+
   // Controllers for simple fields
   final _linkedinController = TextEditingController();
   final _githubController = TextEditingController();
@@ -82,8 +85,8 @@ class _ResumeGeneratorState extends State<ResumeGenerator> {
         ),
         title: Row(
           children: [
-            Icon(Icons.lightbulb, color: Colors.orange, size: 24),
-            SizedBox(width: 12),
+            const Icon(Icons.lightbulb, color: Colors.orange, size: 24),
+            const SizedBox(width: 12),
             Text(
               'Tip',
               style: GoogleFonts.outfit(
@@ -122,18 +125,20 @@ class _ResumeGeneratorState extends State<ResumeGenerator> {
 
       if (result != null && result.files.single.path != null) {
         final file = File(result.files.single.path!);
-        
+
         // Show loading
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => Center(
-            child: CircularProgressIndicator(color: Colors.orange),
-          ),
-        );
+        if (mounted) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => const Center(
+              child: CircularProgressIndicator(color: Colors.orange),
+            ),
+          );
+        }
 
         final response = await ResumeService.uploadPhoto(file);
-        Navigator.pop(context); // Close loading
+        if (mounted) Navigator.pop(context); // Close loading
 
         if (response['success']) {
           setState(() {
@@ -145,7 +150,7 @@ class _ResumeGeneratorState extends State<ResumeGenerator> {
         }
       }
     } catch (e) {
-      Navigator.pop(context); // Close loading if open
+      if (mounted) Navigator.pop(context); // Close loading if open
       _showErrorMessage('Error selecting photo: $e');
     }
   }
@@ -159,7 +164,8 @@ class _ResumeGeneratorState extends State<ResumeGenerator> {
     // Validate resume data
     final validation = ResumeService.validateResumeData(_resumeData);
     if (!validation['isValid']) {
-      _showErrorMessage('Please complete the following:\n${validation['errors'].join('\n')}');
+      _showErrorMessage(
+          'Please complete the following:\n${validation['errors'].join('\n')}');
       return;
     }
 
@@ -169,22 +175,27 @@ class _ResumeGeneratorState extends State<ResumeGenerator> {
 
     try {
       final response = await ResumeService.generateResume(_resumeData);
-      
+
       if (response['success']) {
         // Clear draft since resume is generated
         await ResumeService.clearDraft();
-        
+
         // Show success dialog with options
-        _showResumeGeneratedDialog(response['pdfPath'], _resumeData.personalInfo.fullName);
+        if (mounted) {
+          _showResumeGeneratedDialog(
+              response['pdfPath'], _resumeData.personalInfo.fullName);
+        }
       } else {
         _showErrorMessage(response['message'] ?? 'Failed to generate resume');
       }
     } catch (e) {
       _showErrorMessage('Error generating resume: $e');
     } finally {
-      setState(() {
-        _isGenerating = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isGenerating = false;
+        });
+      }
     }
   }
 
@@ -202,7 +213,8 @@ class _ResumeGeneratorState extends State<ResumeGenerator> {
                 color: Colors.green.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(Icons.check_circle, color: Colors.green, size: 24),
+              child:
+                  const Icon(Icons.check_circle, color: Colors.green, size: 24),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -233,7 +245,7 @@ class _ResumeGeneratorState extends State<ResumeGenerator> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: Colors.blue, size: 16),
+                  const Icon(Icons.info_outline, color: Colors.blue, size: 16),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -269,7 +281,7 @@ class _ResumeGeneratorState extends State<ResumeGenerator> {
                 _showErrorMessage('Failed to open PDF: $e');
               }
             },
-            icon: Icon(Icons.visibility, size: 16),
+            icon: const Icon(Icons.visibility, size: 16),
             label: Text(
               'View Resume',
               style: GoogleFonts.outfit(fontWeight: FontWeight.w600),
@@ -291,7 +303,7 @@ class _ResumeGeneratorState extends State<ResumeGenerator> {
                 _showErrorMessage('Failed to share PDF: $e');
               }
             },
-            icon: Icon(Icons.share, size: 16),
+            icon: const Icon(Icons.share, size: 16),
             label: Text(
               'Share',
               style: GoogleFonts.outfit(fontWeight: FontWeight.w600),
@@ -368,128 +380,19 @@ class _ResumeGeneratorState extends State<ResumeGenerator> {
       body: SafeArea(
         child: Column(
           children: [
-            // Custom Header
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
+            ResumeGeneratorHeader(
+              onHistoryPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ResumeHistoryScreen(),
                   ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.orange.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(Icons.description, color: Colors.orange, size: 24),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Resume Generator',
-                              style: GoogleFonts.outfit(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            Text(
-                              'Create a professional resume in minutes',
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      PopupMenuButton<String>(
-                        icon: Icon(Icons.more_vert, color: Colors.orange),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        onSelected: (value) {
-                          switch (value) {
-                            case 'history':
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const ResumeHistoryScreen(),
-                                ),
-                              );
-                              break;
-                            case 'save_draft':
-                              _saveDraft();
-                              break;
-                            case 'load_draft':
-                              _loadDraft();
-                              break;
-                            case 'help':
-                              _showHint(
-                                'Fill all sections accurately to generate a professional resume PDF. Use clear, concise language and focus on achievements.',
-                              );
-                              break;
-                          }
-                        },
-                        itemBuilder: (context) => [
-                          PopupMenuItem(
-                            value: 'history',
-                            child: Row(
-                              children: [
-                                Icon(Icons.history, size: 18),
-                                const SizedBox(width: 8),
-                                Text('Resume History', style: GoogleFonts.inter()),
-                              ],
-                            ),
-                          ),
-                          PopupMenuItem(
-                            value: 'save_draft',
-                            child: Row(
-                              children: [
-                                Icon(Icons.save, size: 18),
-                                const SizedBox(width: 8),
-                                Text('Save Draft', style: GoogleFonts.inter()),
-                              ],
-                            ),
-                          ),
-                          PopupMenuItem(
-                            value: 'load_draft',
-                            child: Row(
-                              children: [
-                                Icon(Icons.folder_open, size: 18),
-                                const SizedBox(width: 8),
-                                Text('Load Draft', style: GoogleFonts.inter()),
-                              ],
-                            ),
-                          ),
-                          PopupMenuItem(
-                            value: 'help',
-                            child: Row(
-                              children: [
-                                Icon(Icons.help_outline, size: 18),
-                                const SizedBox(width: 8),
-                                Text('Help', style: GoogleFonts.inter()),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
+                );
+              },
+              onSaveDraftPressed: _saveDraft,
+              onLoadDraftPressed: _loadDraft,
+              onHelpPressed: () => _showHint(
+                'Fill all sections accurately to generate a professional resume PDF. Use clear, concise language and focus on achievements.',
               ),
             ),
 
@@ -516,60 +419,20 @@ class _ResumeGeneratorState extends State<ResumeGenerator> {
                       ),
 
                       // Social Links
-                      ResumeSection(
-                        title: 'Professional Links',
-                        subtitle: 'Your online presence and portfolio',
-                        icon: Icons.link_outlined,
-                        tipMessage: 'Add only professional and relevant links. Make sure your LinkedIn profile is complete and up-to-date. Include your best projects on GitHub and portfolio website.',
-                        onTipPressed: () => _showHint(
+                      SocialLinksSection(
+                        linkedinController: _linkedinController,
+                        githubController: _githubController,
+                        portfolioController: _portfolioController,
+                        onShowTip: () => _showHint(
                           'Add only professional and relevant links. Make sure your LinkedIn profile is complete and up-to-date. Include your best projects on GitHub and portfolio website.',
-                        ),
-                        child: Column(
-                          children: [
-                            ResumeInputField(
-                              label: 'LinkedIn Profile',
-                              hint: 'linkedin.com/in/johndoe',
-                              icon: Icons.business_center_outlined,
-                              controller: _linkedinController,
-                            ),
-                            const SizedBox(height: 16),
-                            ResumeInputField(
-                              label: 'GitHub Profile',
-                              hint: 'github.com/johndoe',
-                              icon: Icons.code_outlined,
-                              controller: _githubController,
-                            ),
-                            const SizedBox(height: 16),
-                            ResumeInputField(
-                              label: 'Portfolio Website',
-                              hint: 'johndoe.dev',
-                              icon: Icons.public_outlined,
-                              controller: _portfolioController,
-                            ),
-                          ],
                         ),
                       ),
 
                       // Professional Summary
-                      ResumeSection(
-                        title: 'Professional Summary',
-                        subtitle: 'Brief overview of your experience and goals',
-                        icon: Icons.description_outlined,
-                        tipMessage: 'Write 2-3 sentences highlighting your key skills, experience, and career goals. Focus on what makes you unique and valuable to employers. Use action words and quantify achievements when possible.',
-                        onTipPressed: () => _showHint(
+                      ProfessionalSummarySection(
+                        controller: _summaryController,
+                        onShowTip: () => _showHint(
                           'Write 2-3 sentences highlighting your key skills, experience, and career goals. Focus on what makes you unique and valuable to employers. Use action words and quantify achievements when possible.',
-                        ),
-                        child: ResumeInputField(
-                          label: 'Summary',
-                          hint: 'Experienced software developer with 5+ years in mobile app development...',
-                          controller: _summaryController,
-                          maxLines: 4,
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Professional summary is required';
-                            }
-                            return null;
-                          },
                         ),
                       ),
 
@@ -600,18 +463,10 @@ class _ResumeGeneratorState extends State<ResumeGenerator> {
                       ),
 
                       // Skills
-                      ResumeSection(
-                        title: 'Skills',
-                        subtitle: 'Your technical and professional skills',
-                        icon: Icons.psychology_outlined,
-                        tipMessage: 'List skills relevant to the job you\'re applying for. Separate technical skills from soft skills. Be honest about your skill level - only include skills you can confidently discuss in an interview.',
-                        onTipPressed: () => _showHint(
+                      SkillsSection(
+                        controller: _skillsController,
+                        onShowTip: () => _showHint(
                           'List skills relevant to the job you\'re applying for. Separate technical skills from soft skills. Be honest about your skill level - only include skills you can confidently discuss in an interview.',
-                        ),
-                        child: ResumeInputField(
-                          label: 'Skills',
-                          hint: 'Flutter, Dart, JavaScript, React, Node.js, Python',
-                          controller: _skillsController,
                         ),
                       ),
 
@@ -631,76 +486,9 @@ class _ResumeGeneratorState extends State<ResumeGenerator> {
                       const SizedBox(height: 20),
 
                       // Generate Button
-                      Container(
-                        width: double.infinity,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.orange, Colors.deepOrange],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.orange.withOpacity(0.3),
-                              blurRadius: 12,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton.icon(
-                          onPressed: _isGenerating ? null : _generateResume,
-                          icon: _isGenerating
-                              ? SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : Icon(Icons.picture_as_pdf, size: 20),
-                          label: Text(
-                            _isGenerating ? 'Generating...' : 'Generate Professional Resume',
-                            style: GoogleFonts.outfit(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-                      
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.info_outline, color: Colors.blue, size: 20),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                'Your resume will be generated as a clean, professional PDF ready for job applications.',
-                                style: GoogleFonts.inter(
-                                  fontSize: 13,
-                                  color: Colors.blue[700],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                      ResumeActionButtons(
+                        isGenerating: _isGenerating,
+                        onGenerate: _generateResume,
                       ),
 
                       const SizedBox(height: 20),

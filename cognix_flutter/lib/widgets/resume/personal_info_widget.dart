@@ -84,7 +84,7 @@ class _PersonalInfoWidgetState extends State<PersonalInfoWidget> {
         children: [
           ResumeInputField(
             label: 'Full Name',
-            hint: 'John Doe',
+            hint: 'FirstName LastName',
             icon: Icons.person_outline,
             controller: fullNameController,
             validator: (value) {
@@ -113,7 +113,7 @@ class _PersonalInfoWidgetState extends State<PersonalInfoWidget> {
               Expanded(
                 child: ResumeInputField(
                   label: 'Phone',
-                  hint: '+1 (555) 123-4567',
+                  hint: '+251 912345678',
                   icon: Icons.phone_outlined,
                   controller: phoneController,
                   keyboardType: TextInputType.phone,
@@ -129,7 +129,7 @@ class _PersonalInfoWidgetState extends State<PersonalInfoWidget> {
               Expanded(
                 child: ResumeInputField(
                   label: 'Email',
-                  hint: 'john@example.com',
+                  hint: 'sample@example.com',
                   icon: Icons.email_outlined,
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -149,7 +149,7 @@ class _PersonalInfoWidgetState extends State<PersonalInfoWidget> {
           const SizedBox(height: 16),
           ResumeInputField(
             label: 'Location',
-            hint: 'New York, NY',
+            hint: 'Adis Ababa, Ethiopia',
             icon: Icons.location_on_outlined,
             controller: locationController,
           ),

@@ -6,6 +6,7 @@ class ResumeSection extends StatelessWidget {
   final String subtitle;
   final Widget child;
   final IconData? icon;
+  final String? iconPath;
   final String? tipMessage;
   final VoidCallback? onTipPressed;
 
@@ -15,6 +16,7 @@ class ResumeSection extends StatelessWidget {
     required this.subtitle,
     required this.child,
     this.icon,
+    this.iconPath,
     this.tipMessage,
     this.onTipPressed,
   });
@@ -48,7 +50,7 @@ class ResumeSection extends StatelessWidget {
                       color: Colors.orange.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(icon, color: Colors.orange, size: 20),
+                    child: Icon(icon, color: Colors.orange, size: 24),
                   ),
                   const SizedBox(width: 12),
                 ],
