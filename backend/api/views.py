@@ -19,9 +19,6 @@ from reportlab.lib.utils import ImageReader
 from PIL import Image
 
 
-
-
-
 @csrf_exempt
 def process_file(request):
     if request.method == "POST" and request.FILES.get("file"):
