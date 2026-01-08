@@ -1,46 +1,70 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
+import 'package:go_router/go_router.dart';
 
 class PromoSlider extends StatelessWidget {
-  const PromoSlider({super.key});
+  PromoSlider({super.key});
 
   final List<Map<String, dynamic>> promoCards = const [
     {
-      'title': 'First month at half price!',
-      'discount': '50%',
-      'subtitle': 'Get access to some of our AI tools',
-      'color1': Color.fromARGB(255, 255, 119, 0),
-      'color2': Color.fromARGB(255, 255, 119, 0),
-      'buttonText': 'Get Offer',
+      'title': 'Smart Translation',
+      'discount': 'Free',
+      'subtitle': 'Translate any text in real-time in more than 6 languages',
+      'color1': Color(0xFFFF7700),
+      'color2': Color(0xFFFF7700),
+      'buttonText': 'Try Now',
     },
     {
-      'title': 'Get Premium Plan',
-      'discount': "20 per month",
-      'subtitle': 'Get access to all AI tools',
-      'color1': Color.fromARGB(231, 2, 27, 255),
-      'color2': Color.fromARGB(231, 2, 27, 255),
-      'buttonText': 'Subscribe',
+      'title': 'Smart Resume',
+      'discount': "Free",
+      'subtitle': 'Create a professional resume in minutes',
+      'color1': Color(0xFF021BFF),
+      'color2': Color(0xFF021BFF),
+      'buttonText': 'Check Now',
     },
     {
       'title': 'Are you tutor/teacher?',
       'discount': 'Free',
       'subtitle': 'Generate learning materials for your students',
-      'color1': Color.fromARGB(255, 255, 0, 0),
-      'color2': Color.fromARGB(255, 255, 0, 0),
+      'color1': Color(0xFFFF0000),
+      'color2': Color(0xFFFF0000),
       'buttonText': 'Generate Now',
     },
     {
-      'title': 'Stunning Resume',
-      'discount': '3 trials per month',
-      'subtitle': 'Creating a professional resume in minutes',
-      'color1': Color.fromARGB(255, 0, 166, 255),
-      'color2': Color.fromARGB(255, 0, 166, 255),
+      'title': 'File Conversion',
+      'discount': 'Free',
+      'subtitle': 'Convert Multiple file formats images, pdf, doc,...in minutes',
+      'color1': Color(0xFF00A6FF),
+      'color2': Color(0xFF00A6FF),
       'buttonText': 'Try Now',
+    },
+    {
+      'title': 'File Analyser',
+      'discount':'Free',
+      'subtitle':'Analyze files to get detailed and structured information about them',
+      'color1': Color(0xFFD400FF),
+      'color2': Color(0xFFD400FF),
+      'buttonText': 'Try it out',
     },
   ];
 
+  final List<String> screens = [
+    'translator',
+    'resume',
+    'filegenerator',
+    'converter',
+    'chat',
+  ];
+
+
+
   @override
   Widget build(BuildContext context) {
+    //function to be called on navigation to route to destination screen
+  void _onButtonPressed(int index) {
+    context.push('/${screens[index]}');
+  }
+
     return SizedBox(
       height: 250, // Adjust height as needed
       child: CardSwiper(
@@ -110,7 +134,7 @@ class PromoSlider extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    // Handle subscription
+                    _onButtonPressed(index);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,

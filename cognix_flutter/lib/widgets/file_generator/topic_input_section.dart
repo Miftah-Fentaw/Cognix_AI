@@ -35,7 +35,7 @@ class TopicInputSection extends StatelessWidget {
           ),
           child: TextField(
             controller: controller,
-            maxLines: 4,
+            maxLines: 10,
             decoration: InputDecoration(
               hintText:
                   "e.g., The French Revolution, Quantum Mechanics basics, or paste your rough notes here...",

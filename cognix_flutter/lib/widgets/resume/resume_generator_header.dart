@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ResumeGeneratorHeader extends StatelessWidget {
@@ -18,7 +19,7 @@ class ResumeGeneratorHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -31,6 +32,14 @@ class ResumeGeneratorHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
+          Align(
+              alignment: Alignment.topLeft,
+               child: IconButton(
+                         icon: const Icon(Icons.arrow_back,color: Colors.black,),
+                         onPressed: () => context.pushReplacement('/'),
+                       ),
+             ),
+             SizedBox(width: 5,),
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(

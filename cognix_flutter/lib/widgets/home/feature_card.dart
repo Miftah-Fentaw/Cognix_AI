@@ -65,7 +65,7 @@ class FeatureCard extends StatelessWidget {
         // Shadow overlay with lock icon
         Container(
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withOpacity(0.6),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Center(
@@ -73,13 +73,13 @@ class FeatureCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(
-                  Icons.lock,
-                  color: Colors.white,
+                  Icons.construction,
+                  color: Colors.orange,
                   size: 32,
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Subscribe to Unlock',
+                  'Coming Soon',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 12,

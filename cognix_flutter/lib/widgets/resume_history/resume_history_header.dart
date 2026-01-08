@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ResumeHistoryHeader extends StatelessWidget {
@@ -22,13 +23,25 @@ class ResumeHistoryHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
+          Align(
+            alignment: Alignment.topLeft,
+            child: IconButton(
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+              ),
+              onPressed: () => context.pushReplacement('/'),
+            ),
+          ),
+          SizedBox(width: 16),
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.orange.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Image.asset('assets/icons/history.png', width: 24, height: 24),
+            child:
+                Image.asset('assets/icons/history.png', width: 24, height: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
