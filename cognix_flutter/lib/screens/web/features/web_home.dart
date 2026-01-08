@@ -74,6 +74,34 @@ class _WebHomeState extends State<WebHome> {
                 content: Text('Resume History not available on web yet')),
           );
         },
+        onShowTranslationHistory: () {
+          Navigator.pop(context);
+          // If screens are compatible, push. Else show snackbar.
+          // Assuming compatible for now given it's Flutter.
+          // But context.push requires GoRouter context or equivalent.
+          // WebHome uses Navigator.pop, so context is valid.
+          // However, WebHome doesn't seem to import AppRoutes/GoRouter in the snippet I saw?
+          // I need to check imports.
+          // If simpler, just show SnackBar for uniformity with other web items.
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Translation History not available on web yet')),
+          );
+        },
+        onShowConversionHistory: () {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Conversion History not available on web yet')),
+          );
+        },
+        onShowFileGenHistory: () {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Generation History not available on web yet')),
+          );
+        },
         onShowSettings: () {
           // Web settings not implemented yet
           Navigator.pop(context);
