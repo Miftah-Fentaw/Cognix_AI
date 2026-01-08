@@ -1,4 +1,6 @@
 import 'package:cognix/providers/auth_provider.dart';
+import 'package:cognix/providers/converter_provider.dart';
+import 'package:cognix/providers/translation_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'config/theme.dart';
@@ -16,6 +18,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ConverterProvider()),
+        ChangeNotifierProvider(create: (_) => TranslationProvider()),
       ],
       child: Builder(
         builder: (context) {
