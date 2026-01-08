@@ -19,12 +19,26 @@ from django.urls import path
 from django.urls import include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+
+
+# Checking if the server is running, from the app
+@csrf_exempt
+def health_check(request):
+    return JsonResponse({'status': 'ok'})
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
+    path('converter/', include('converter.urls')),
+    path("dictionary/", include("dictionary.urls")),
+    path('health/', health_check),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
 
