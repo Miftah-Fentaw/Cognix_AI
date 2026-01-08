@@ -44,6 +44,7 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         extendBodyBehindAppBar: true,
+        backgroundColor: Color(0xFFF5F5F7),
         appBar: AppBar(
           title: const Text('Chat History',
               style: TextStyle(fontWeight: FontWeight.bold)),
