@@ -1,17 +1,60 @@
 class AppConstants {
   // Network Configuration
-  static const String baseIpAddress = '10.230.37.240';
+  static const String baseIpAddress = '192.168.0.132';
   static const String basePort = '8000';
   static const String baseUrl = 'http://$baseIpAddress:$basePort';
 
+
   // API Endpoints
+
   static const String resumeGenerateEndpoint = '/api/generate-resume/';
   static const String resumeUploadPhotoEndpoint = '/api/upload-photo/';
+  static const String chatProcessTextEndpoint = '/api/process-text/';
+  static const String chatProcessFileEndpoint = '/api/process-file/';
+  static const String generatePdfEndpoint = '/api/generate-pdf/';
+
+
+
+// Translation Endpoints
+static const String translateEndpoint = '$baseUrl/dictionary/translate/';
+
+
+
+
+
+  // Converter Endpoints
+  static const String converterBaseEndpoint = '/converter';
+  static const String convertImageEndpoint =
+      '$converterBaseEndpoint/convert-image/';
+  static const String convertPdfEndpoint =
+      '$converterBaseEndpoint/convert-pdf/';
+  static const String convertDocEndpoint =
+      '$converterBaseEndpoint/convert-doc/';
+  static const String convertPptxEndpoint =
+      '$converterBaseEndpoint/convert-pptx/';
+  static const String convertTxtEndpoint =
+      '$converterBaseEndpoint/convert-txt/';
+  static const String convertCsvEndpoint =
+      '$converterBaseEndpoint/convert-csv/';
+  static const String convertJsonEndpoint =
+      '$converterBaseEndpoint/convert-json/';
 
   // Full API URLs
   static const String resumeGenerateUrl = '$baseUrl$resumeGenerateEndpoint';
   static const String resumeUploadPhotoUrl =
       '$baseUrl$resumeUploadPhotoEndpoint';
+  static const String chatProcessTextUrl = '$baseUrl$chatProcessTextEndpoint';
+  static const String chatProcessFileUrl = '$baseUrl$chatProcessFileEndpoint';
+  static const String generatePdfUrl = '$baseUrl$generatePdfEndpoint';
+  // Converter URLs
+  static const String converterBaseUrl = '$baseUrl$converterBaseEndpoint';
+  static const String convertImageUrl = '$baseUrl$convertImageEndpoint';
+  static const String convertPdfUrl = '$baseUrl$convertPdfEndpoint';
+  static const String convertDocUrl = '$baseUrl$convertDocEndpoint';
+  static const String convertPptxUrl = '$baseUrl$convertPptxEndpoint';
+  static const String convertTxtUrl = '$baseUrl$convertTxtEndpoint';
+  static const String convertCsvUrl = '$baseUrl$convertCsvEndpoint';
+  static const String convertJsonUrl = '$baseUrl$convertJsonEndpoint';
 
   // App Configuration
   static const String appName = 'Cognix AI';
