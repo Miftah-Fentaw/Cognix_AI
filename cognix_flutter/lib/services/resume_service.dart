@@ -10,28 +10,32 @@ import '../utils/constants.dart';
 
 class ResumeService {
   /// Generate resume PDF from resume data
-  static Future<Map<String, dynamic>> generateResume(ResumeData resumeData) async {
+  static Future<Map<String, dynamic>> generateResume(
+      ResumeData resumeData) async {
     try {
-      final response = await http.post(
-        Uri.parse(AppConstants.resumeGenerateUrl),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(resumeData.toJson()),
-      ).timeout(Duration(seconds: AppConstants.connectionTimeout));
+      final response = await http
+          .post(
+            Uri.parse(AppConstants.resumeGenerateUrl),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode(resumeData.toJson()),
+          )
+          .timeout(Duration(seconds: AppConstants.connectionTimeout));
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-        
+
         // Download the PDF file
         final pdfBytes = await _downloadPDF(responseData['pdf_url']);
         if (pdfBytes != null) {
           // Save PDF locally
-          final savedPath = await _savePDFLocally(pdfBytes, resumeData.personalInfo.fullName);
-          
+          final savedPath =
+              await _savePDFLocally(pdfBytes, resumeData.personalInfo.fullName);
+
           // Save to history
           await _saveToHistory(resumeData, savedPath, responseData['pdf_url']);
-          
+
           return {
             'success': true,
             'pdfPath': savedPath,
@@ -56,7 +60,8 @@ class ResumeService {
       return {
         'success': false,
         'error': e.toString(),
-        'message': 'Network error occurred. Please check your connection and server IP.',
+        'message':
+            'Network error occurred. Please check your connection and server IP.',
       };
     }
   }
@@ -65,11 +70,13 @@ class ResumeService {
   static Future<Uint8List?> _downloadPDF(String pdfUrl) async {
     try {
       // Handle relative URLs by prepending base URL if needed
-      final fullUrl = pdfUrl.startsWith('http') ? pdfUrl : '${AppConstants.baseUrl}$pdfUrl';
-      
-      final response = await http.get(Uri.parse(fullUrl))
+      final fullUrl =
+          pdfUrl.startsWith('http') ? pdfUrl : '${AppConstants.baseUrl}$pdfUrl';
+
+      final response = await http
+          .get(Uri.parse(fullUrl))
           .timeout(Duration(seconds: AppConstants.receiveTimeout));
-      
+
       if (response.statusCode == 200) {
         return response.bodyBytes;
       }
@@ -81,29 +88,34 @@ class ResumeService {
   }
 
   /// Save PDF to local storage
-  static Future<String> _savePDFLocally(Uint8List pdfBytes, String fileName) async {
+  static Future<String> _savePDFLocally(
+      Uint8List pdfBytes, String fileName) async {
     final directory = await getApplicationDocumentsDirectory();
-    final resumesDir = Directory('${directory.path}/${AppConstants.resumesFolderName}');
-    
+    final resumesDir =
+        Directory('${directory.path}/${AppConstants.resumesFolderName}');
+
     if (!await resumesDir.exists()) {
       await resumesDir.create(recursive: true);
     }
-    
+
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final sanitizedFileName = fileName.replaceAll(RegExp(r'[^\w\s-]'), '').trim();
+    final sanitizedFileName =
+        fileName.replaceAll(RegExp(r'[^\w\s-]'), '').trim();
     final file = File('${resumesDir.path}/${sanitizedFileName}_$timestamp.pdf');
-    
+
     await file.writeAsBytes(pdfBytes);
     return file.path;
   }
 
   /// Save resume to history
-  static Future<void> _saveToHistory(ResumeData resumeData, String localPath, String? onlineUrl) async {
+  static Future<void> _saveToHistory(
+      ResumeData resumeData, String localPath, String? onlineUrl) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final historyJson = prefs.getString(AppConstants.resumeHistoryKey) ?? '[]';
+      final historyJson =
+          prefs.getString(AppConstants.resumeHistoryKey) ?? '[]';
       final List<dynamic> history = jsonDecode(historyJson);
-      
+
       final historyItem = {
         'id': DateTime.now().millisecondsSinceEpoch.toString(),
         'name': resumeData.personalInfo.fullName,
@@ -113,14 +125,14 @@ class ResumeService {
         'onlineUrl': onlineUrl,
         'resumeData': resumeData.toJson(),
       };
-      
+
       history.insert(0, historyItem); // Add to beginning
-      
+
       // Keep only last N resumes
       if (history.length > AppConstants.maxResumeHistoryCount) {
         history.removeRange(AppConstants.maxResumeHistoryCount, history.length);
       }
-      
+
       await prefs.setString(AppConstants.resumeHistoryKey, jsonEncode(history));
     } catch (e) {
       print('Error saving to history: $e');
@@ -131,9 +143,10 @@ class ResumeService {
   static Future<List<Map<String, dynamic>>> getResumeHistory() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final historyJson = prefs.getString(AppConstants.resumeHistoryKey) ?? '[]';
+      final historyJson =
+          prefs.getString(AppConstants.resumeHistoryKey) ?? '[]';
       final List<dynamic> history = jsonDecode(historyJson);
-      
+
       return history.cast<Map<String, dynamic>>();
     } catch (e) {
       return [];
@@ -168,13 +181,14 @@ class ResumeService {
   static Future<bool> deleteFromHistory(String resumeId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final historyJson = prefs.getString(AppConstants.resumeHistoryKey) ?? '[]';
+      final historyJson =
+          prefs.getString(AppConstants.resumeHistoryKey) ?? '[]';
       final List<dynamic> history = jsonDecode(historyJson);
-      
+
       final index = history.indexWhere((item) => item['id'] == resumeId);
       if (index != -1) {
         final item = history[index];
-        
+
         // Delete local file if exists
         if (item['localPath'] != null) {
           final file = File(item['localPath']);
@@ -182,9 +196,10 @@ class ResumeService {
             await file.delete();
           }
         }
-        
+
         history.removeAt(index);
-        await prefs.setString(AppConstants.resumeHistoryKey, jsonEncode(history));
+        await prefs.setString(
+            AppConstants.resumeHistoryKey, jsonEncode(history));
         return true;
       }
       return false;
@@ -208,7 +223,8 @@ class ResumeService {
         ),
       );
 
-      final streamedResponse = await request.send()
+      final streamedResponse = await request
+          .send()
           .timeout(Duration(seconds: AppConstants.receiveTimeout));
       final response = await http.Response.fromStream(streamedResponse);
 
@@ -257,18 +273,16 @@ class ResumeService {
 
     // Validate work experience
     bool hasValidExperience = resumeData.workExperiences.any((exp) =>
-        exp.jobTitle.trim().isNotEmpty &&
-        exp.companyName.trim().isNotEmpty);
-    
+        exp.jobTitle.trim().isNotEmpty && exp.companyName.trim().isNotEmpty);
+
     if (!hasValidExperience) {
       errors.add('At least one work experience is required');
     }
 
     // Validate education
     bool hasValidEducation = resumeData.educations.any((edu) =>
-        edu.degree.trim().isNotEmpty &&
-        edu.institution.trim().isNotEmpty);
-    
+        edu.degree.trim().isNotEmpty && edu.institution.trim().isNotEmpty);
+
     if (!hasValidEducation) {
       errors.add('At least one education entry is required');
     }
@@ -283,7 +297,8 @@ class ResumeService {
   static Future<bool> saveResumeLocally(ResumeData resumeData) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(AppConstants.resumeDraftKey, jsonEncode(resumeData.toJson()));
+      await prefs.setString(
+          AppConstants.resumeDraftKey, jsonEncode(resumeData.toJson()));
       return true;
     } catch (e) {
       return false;
@@ -319,15 +334,17 @@ class ResumeService {
   static Future<Map<String, dynamic>> testConnection() async {
     try {
       final response = await http.get(
-        Uri.parse('${AppConstants.baseUrl}/api/health/'),
+        Uri.parse('${AppConstants.baseUrl}/health/'),
         headers: {'Content-Type': 'application/json'},
       ).timeout(Duration(seconds: 10));
 
       if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
         return {
           'success': true,
           'message': 'Connected to server successfully',
           'serverUrl': AppConstants.baseUrl,
+          'status': data['status'],
         };
       } else {
         return {
@@ -339,7 +356,8 @@ class ResumeService {
     } catch (e) {
       return {
         'success': false,
-        'message': 'Cannot connect to server. Please check IP address and network.',
+        'message':
+            'Cannot connect to server. Please check IP address and network.',
         'error': e.toString(),
         'serverUrl': AppConstants.baseUrl,
       };
