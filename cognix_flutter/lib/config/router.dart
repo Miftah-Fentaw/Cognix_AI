@@ -2,14 +2,20 @@ import 'package:cognix/providers/auth_provider.dart';
 import 'package:cognix/screens/mobile/auth/mobile_signin.dart';
 import 'package:cognix/screens/mobile/auth/mobile_signup.dart';
 import 'package:cognix/screens/mobile/auth/mobile_welcome.dart';
-import 'package:cognix/screens/mobile/features/settings_screen.dart'
+import 'package:cognix/screens/mobile/main_screens/converter_screen.dart';
+import 'package:cognix/screens/mobile/features/converted_outputscreen.dart';
+import 'package:cognix/screens/mobile/main_screens/settings_screen.dart'
     show SettingsScreen;
 import 'package:cognix/screens/mobile/main_screens/chat_screen.dart';
 import 'package:cognix/screens/mobile/main_screens/home_screen.dart';
 import 'package:cognix/screens/mobile/main_screens/file_generator.dart';
 import 'package:cognix/screens/mobile/main_screens/resume_generator.dart';
-import 'package:cognix/screens/mobile/main_screens/resume_history_screen.dart';
+import 'package:cognix/screens/mobile/features/resume_history_screen.dart';
 import 'package:cognix/screens/mobile/features/chat_history_screen.dart';
+import 'package:cognix/screens/mobile/main_screens/translator_screen.dart';
+import 'package:cognix/screens/mobile/features/translation_history_screen.dart';
+import 'package:cognix/screens/mobile/features/conversion_history_screen.dart';
+import 'package:cognix/screens/mobile/features/file_generation_history_screen.dart';
 import 'package:cognix/screens/mobile/onboarding/onboarding_screen.dart';
 import 'package:cognix/services/chat_history_service.dart';
 import 'package:cognix/screens/web/auth/web_signin.dart';
@@ -170,11 +176,11 @@ class AppRouter {
       ),
 
       GoRoute(
-        path: AppRoutes.premiumFeature,
-        name: 'premium_feature',
+        path: AppRoutes.filegenerator,
+        name: 'filegenerator',
         pageBuilder: (context, state) => NoTransitionPage(
           child: PlatformChecker.detectPlatform() == AppPlatform.web
-              ? const PremiumFeature()
+              ? const FileGenerator()
               : PopScope(
                   canPop: false,
                   onPopInvoked: (didPop) {
@@ -182,10 +188,63 @@ class AppRouter {
                       context.go(AppRoutes.home);
                     }
                   },
-                  child: const PremiumFeature(),
+                  child: const FileGenerator(),
                 ),
         ),
-      )
+      ),
+
+      GoRoute(
+        path: AppRoutes.converter,
+        name: 'converter',
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: PlatformChecker.detectPlatform() == AppPlatform.web
+              ? const ConverterScreen()
+              : PopScope(
+                  canPop: false,
+                  onPopInvoked: (didPop) {
+                    if (!didPop) {
+                      context.go(AppRoutes.home);
+                    }
+                  },
+                  child: const ConverterScreen(),
+                ),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.converterOutput,
+        name: 'converter_output',
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: ConvertedOutputScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.translator,
+        name: 'translator',
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: TranslationScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.translationHistory,
+        name: 'translation_history',
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: TranslationHistoryScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.conversionHistory,
+        name: 'conversion_history',
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: ConversionHistoryScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.fileGenHistory,
+        name: 'file_gen_history',
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: FileGenerationHistoryScreen(),
+        ),
+      ),
     ],
   );
 }
@@ -196,10 +255,16 @@ class AppRoutes {
   static const String auth = '/auth';
   static const String authSignIn = '/auth/signin';
   static const String authSignUp = '/auth/signup';
-  static const String premiumFeature = '/premium-feature';
+  static const String filegenerator = '/filegenerator';
   static const String chat = '/chat';
   static const String chatHistory = '/chat-history';
   static const String settings = '/settings';
   static const String resume = '/resume';
   static const String resumeHistory = '/resume-history';
+  static const String converter = '/converter';
+  static const String converterOutput = '/converter/output';
+  static const String translator = '/translator';
+  static const String translationHistory = '/translation-history';
+  static const String conversionHistory = '/conversion-history';
+  static const String fileGenHistory = '/file-gen-history';
 }
