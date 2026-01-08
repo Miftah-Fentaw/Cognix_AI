@@ -5,6 +5,7 @@ import 'package:cognix/services/chat_history_service.dart';
 import 'package:cognix/widgets/chat_list.dart';
 import 'package:cognix/widgets/input_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ChattingScreen extends StatefulWidget {
@@ -28,28 +29,32 @@ class _ChattingScreenState extends State<ChattingScreen> {
 
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: Padding(
+        padding: const EdgeInsetsGeometry.symmetric(
+          vertical: 70,
+          horizontal: 0,
+        ),
+        child: FloatingActionButton(
+          backgroundColor: Colors.white,
+          onPressed: () {
+            controller.startNewChat();
+            setState(() {});
+          },
+          child: Icon(Icons.note_add_rounded,color: Colors.blue.shade600,),
+        ),
+      ),
       extendBodyBehindAppBar: true, // ← makes appbar transparent
-
+      backgroundColor: Color(0xFFF5F5F7),
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back,color: Colors.black,),
+          onPressed: () => context.pushReplacement('/'),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false, // Remove default back button
         title: Row(
           children: [
-            // New Chat button in top left
-            IconButton(
-              onPressed: () {
-                controller.startNewChat();
-                setState(() {});
-              },
-              icon: const Icon(
-                Icons.add_circle_outline,
-                color: Colors.white,
-                size: 28,
-              ),
-              tooltip: 'New Chat',
-            ),
-            const SizedBox(width: 8),
             Text(
               'Cognix',
               style: GoogleFonts.aDLaMDisplay(

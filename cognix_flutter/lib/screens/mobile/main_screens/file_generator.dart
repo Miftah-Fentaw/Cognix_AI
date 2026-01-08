@@ -3,12 +3,14 @@ import 'dart:io';
 
 import 'package:cognix/models/chat_message.dart';
 import 'package:cognix/services/chat_history_service.dart';
+import 'package:cognix/utils/constants.dart';
 import 'package:cognix/widgets/file_generator/generate_button.dart';
 import 'package:cognix/widgets/file_generator/length_slider_section.dart';
-import 'package:cognix/widgets/file_generator/premium_header.dart';
+import 'package:cognix/widgets/file_generator/file_geenrator_header.dart';
 import 'package:cognix/widgets/file_generator/success_view.dart';
 import 'package:cognix/widgets/file_generator/topic_input_section.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:open_file/open_file.dart';
@@ -16,14 +18,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:uuid/uuid.dart';
 
-class PremiumFeature extends StatefulWidget {
-  const PremiumFeature({super.key});
+class FileGenerator extends StatefulWidget {
+  const FileGenerator({super.key});
 
   @override
-  State<PremiumFeature> createState() => _PremiumFeatureState();
+  State<FileGenerator> createState() => _FileGeneratorState();
 }
 
-class _PremiumFeatureState extends State<PremiumFeature> {
+class _FileGeneratorState extends State<FileGenerator> {
   final TextEditingController _topicController = TextEditingController();
   final ChatHistoryService _historyService = ChatHistoryService();
   double _pageCount = 10;
@@ -31,7 +33,7 @@ class _PremiumFeatureState extends State<PremiumFeature> {
   String? _statusMessage;
   String? _generatedFilePath; // Path to successful PDF
 
-  final String finegenerating = 'http://10.230.37.240:8000/api/generate-pdf/';
+  final String finegenerating = AppConstants.generatePdfUrl;
 
   Future<void> _generateStudyMaterial() async {
     final topic = _topicController.text.trim();
@@ -164,11 +166,11 @@ class _PremiumFeatureState extends State<PremiumFeature> {
       backgroundColor: Colors.grey[50],
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(5.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const PremiumHeader(),
+              const FileGeneratorHeader(),
               const SizedBox(height: 32),
               if (_generatedFilePath != null)
                 SuccessView(

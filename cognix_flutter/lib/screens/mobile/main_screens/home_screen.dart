@@ -23,7 +23,7 @@ class MobileHome extends StatelessWidget {
               Icon(Icons.lock, color: Colors.orange, size: 28),
               SizedBox(width: 12),
               Text(
-                'Premium Feature',
+                'Coming Soon',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -32,20 +32,13 @@ class MobileHome extends StatelessWidget {
             ],
           ),
           content: Text(
-            'You must subscribe to unlock this premium feature. Get access to all AI tools with our subscription plan.',
+            'This feature is currently under development and will be available soon. Stay tuned for updates!',
             style: TextStyle(fontSize: 16),
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: Colors.grey),
-              ),
-            ),
             ElevatedButton(
               onPressed: () {
-                
+                Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
@@ -53,7 +46,7 @@ class MobileHome extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: Text('Upgrade Now'),
+              child: Text('Close', style: TextStyle(color: Colors.white)),
             ),
           ],
         );
@@ -79,6 +72,15 @@ class MobileHome extends StatelessWidget {
           onResumeHistory: () {
             context.push(AppRoutes.resumeHistory);
           },
+          onShowTranslationHistory: () {
+            context.push(AppRoutes.translationHistory);
+          },
+          onShowConversionHistory: () {
+            context.push(AppRoutes.conversionHistory);
+          },
+          onShowFileGenHistory: () {
+            context.push(AppRoutes.fileGenHistory);
+          },
           onShowSettings: () {
             context.push(AppRoutes.settings);
           },
@@ -96,7 +98,10 @@ class MobileHome extends StatelessWidget {
                       children: [
                         Builder(
                           builder: (context) => IconButton(
-                            icon: const Icon(Icons.more_vert),
+                            icon: const Icon(
+                              Icons.more_vert,
+                              color: Colors.black,
+                            ),
                             onPressed: () => Scaffold.of(context).openDrawer(),
                           ),
                         ),
@@ -146,7 +151,7 @@ class MobileHome extends StatelessWidget {
               const SizedBox(height: 20),
 
               // FULL WIDTH STACKED CARD SWIPER
-              const PromoSlider(),
+              PromoSlider(),
 
               const SizedBox(height: 100),
 
@@ -175,7 +180,7 @@ class MobileHome extends StatelessWidget {
                           iconPath: 'assets/icons/file2.png',
                           title: 'Academic File Generator',
                           onTap: () {
-                            context.go(AppRoutes.premiumFeature);
+                            context.go(AppRoutes.filegenerator);
                           }),
                       FeatureCard(
                           iconPath: 'assets/icons/resume.png',
@@ -184,10 +189,11 @@ class MobileHome extends StatelessWidget {
                             context.go(AppRoutes.resume);
                           }),
                       FeatureCard(
-                          iconPath: 'assets/icons/ad.png',
-                          title: 'Ad Maker',
-                          onTap: () => lock_dialogue(context),
-                          isLocked: true),
+                          iconPath: 'assets/icons/converter.png',
+                          title: 'File Converter',
+                          onTap: () {
+                            context.go(AppRoutes.converter);
+                          }),
                       FeatureCard(
                           iconPath: 'assets/icons/presentation.png',
                           title: 'Presentation Builder',
@@ -199,10 +205,10 @@ class MobileHome extends StatelessWidget {
                           onTap: () => lock_dialogue(context),
                           isLocked: true),
                       FeatureCard(
-                          iconPath: 'assets/icons/translator.png',
-                          title: 'Smart Translator',
-                          onTap: () => lock_dialogue(context),
-                          isLocked: true),
+                        iconPath: 'assets/icons/translator.png',
+                        title: 'Smart Translator',
+                        onTap: () => context.go(AppRoutes.translator),
+                      ),
                       FeatureCard(
                           iconPath: 'assets/icons/settings.png',
                           title: 'Settings',
