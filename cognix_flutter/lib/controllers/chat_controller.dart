@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:cognix/models/chat_message.dart';
 import 'package:cognix/models/AIResponse.dart';
 import 'package:cognix/services/chat_history_service.dart';
+import 'package:cognix/utils/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 import 'package:file_picker/file_picker.dart';
@@ -11,8 +12,8 @@ import 'package:file_picker/file_picker.dart';
 class ChatController {
   List<ChatMessage> messages = [];
   bool isLoading = false;
-  final String textEndpoint = 'http://10.230.37.240:8000/api/process-text/';
-  final String fileEndpoint = 'http://10.230.37.240:8000/api/process-file/';
+  final String textEndpoint = AppConstants.chatProcessTextUrl;
+  final String fileEndpoint = AppConstants.chatProcessFileUrl;
 
   // final List<String> backendCandidates = [
   //   'http://10.230.37.240:8000/api/process-text/', // Current LAN IP
